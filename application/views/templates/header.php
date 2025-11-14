@@ -21,7 +21,7 @@
                 <a href="<?= base_url('index.php/menu'); ?>">Menu</a>
                 <a href="<?= base_url('index.php/blog'); ?>">Blog</a>
                 <a href="<?= base_url('index.php/contact'); ?>" class="cta">Contact Us</a>
-                <a href="#" class="cta">Contact Us</a>
+                <a href="#" class="cta">Login</a>
             </nav>
         </div>
     </header>
