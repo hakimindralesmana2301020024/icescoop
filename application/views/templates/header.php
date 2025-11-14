@@ -19,7 +19,7 @@
                 <a href="<?= base_url('index.php/home'); ?>">Home</a>
                 <a href="<?= base_url('index.php/about'); ?>">About</a>
                 <a href="<?= base_url('index.php/menu'); ?>">Menu</a>
-                <a href="#">Blog</a>
+                <a href="<?= base_url('index.php/blog'); ?>">Blog</a>
                 <a href="#" class="cta">Contact Us</a>
             </nav>
         </div>
