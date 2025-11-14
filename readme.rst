@@ -11,3 +11,5 @@ http://localhost/icescoop/order/cart
 http://localhost/icescoop/order/checkout
 
 http://localhost/icescoop/blog
+
+http://localhost/icescoop/index.php/blog/0
