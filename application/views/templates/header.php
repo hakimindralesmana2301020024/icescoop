@@ -20,7 +20,11 @@
                 <a href="<?= base_url('index.php/about'); ?>">About</a>
                 <a href="<?= base_url('index.php/menu'); ?>">Menu</a>
                 <a href="<?= base_url('index.php/blog'); ?>">Blog</a>
+<<<<<<< HEAD
+                <a href="<?= base_url('index.php/contact'); ?>" class="cta">Contact Us</a>
+=======
                 <a href="#" class="cta">Contact Us</a>
+>>>>>>> 917ab3580eb48f9c9442a520c7ac39001373a4a4
             </nav>
         </div>
     </header>

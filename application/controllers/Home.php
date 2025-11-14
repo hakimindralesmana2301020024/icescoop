@@ -21,4 +21,11 @@ class Home extends CI_Controller {
         $this->load->view('templates/footer');
     }
 
+    public function contact()
+    {
+        $this->load->view('templates/header');
+        $this->load->view('contact');
+        $this->load->view('templates/footer');
+    }
+
 }
