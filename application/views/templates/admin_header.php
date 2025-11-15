@@ -22,10 +22,10 @@
                         <i class="bi bi-caret-down-fill sub-caret" aria-hidden="true"></i>
                     </button>
                     <div class="admin-submenu" id="menu-sub-list" role="menu">
-                        <a href="<?= base_url('index.php/home'); ?>">Home</a>
-                        <a href="<?= base_url('index.php/about'); ?>">About</a>
-                        <a href="<?= base_url('index.php/menu'); ?>">Menu</a>
-                        <a href="<?= base_url('index.php/blog'); ?>">Blog</a>
+                        <a href="#">Home</a>
+                        <a href="#">About</a>
+                        <a href="#">Menu</a>
+                        <a href="#">Blog</a>
                     </div>
                 </div>
                 <a href="#"><i class="bi bi-basket"></i> Orders</a>
@@ -38,12 +38,7 @@
                     <div class="admin-menu-wrapper">
                         
                         <div class="admin-title">Admin Dashboard</div>
-                        <div id="admin-menu-list" class="admin-menu-list" role="menu">
-                            <a href="<?= base_url('index.php/home'); ?>">Home</a>
-                            <a href="<?= base_url('index.php/about'); ?>">About</a>
-                            <a href="<?= base_url('index.php/menu'); ?>">Menu</a>
-                            <a href="<?= base_url('index.php/blog'); ?>">Blog</a>
-                        </div>
+                        
                     </div>
                 </div>
                 <div class="top-right">
