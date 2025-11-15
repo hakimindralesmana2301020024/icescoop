@@ -4,6 +4,8 @@
 body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--admin-bg);color:#222}
 .admin-shell{display:flex;min-height:100vh}
 .admin-sidebar{width:220px;background:var(--admin-sidebar);color:#fff;padding:24px 16px;flex-shrink:0}
+/* Make sidebar fixed so it doesn't scroll with page content */
+.admin-sidebar{position:fixed;top:0;left:0;bottom:0;height:100vh;overflow:auto;z-index:30}
 .admin-brand{font-size:20px;font-weight:700;margin-bottom:18px}
 .admin-brand .muted{font-weight:400;color:#c6b8d6;font-size:12px}
 .admin-nav a{display:block;color:#dfe2f5;padding:10px 12px;border-radius:8px;text-decoration:none;margin-bottom:6px}
@@ -16,7 +18,7 @@ body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--admin-bg);
 .admin-nav .admin-submenu a{padding:8px 12px;border-radius:6px;background:transparent;color:#dfe2f5;margin-bottom:6px;font-size:14px}
 .admin-nav .nav-item.open .admin-submenu{display:flex}
 .admin-nav .nav-item.open .sub-toggle{background:rgba(255,255,255,0.03)}
-.admin-main{flex:1;display:flex;flex-direction:column}
+.admin-main{flex:1;display:flex;flex-direction:column;margin-left:220px}
 .admin-topbar{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;background:transparent;border-bottom:1px solid rgba(0,0,0,0.04)}
 .top-user{color:var(--muted)}
 .admin-content{padding:24px}
@@ -46,7 +48,33 @@ body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--admin-bg);
 .badge.done{background:#e8fff1;color:#12a65a;border:1px solid #cfefd8}
 .badge.shipping{background:#eef6ff;color:#0b66ff;border:1px solid #d6e8ff}
 
+/* About editor styles */
+.admin-page{padding:8px}
+.admin-card{background:#fff;border-radius:12px;padding:20px;max-width:1100px;margin:0 auto;box-shadow:0 10px 30px rgba(0,0,0,0.04)}
+.admin-card h2{margin-top:0;margin-bottom:14px}
+.admin-alert{padding:10px 12px;border-radius:8px;margin-bottom:12px}
+.admin-alert.success{background:#e8fff4;color:#086a3b;border:1px solid #cfeee0}
+.form-group{margin-bottom:12px}
+.form-group label{display:block;font-weight:600;margin-bottom:6px;color:#333}
+.admin-card .form-control{width:100%;padding:10px;border:1px solid #e6e6e6;border-radius:8px;background:#fff}
+.admin-card .form-control:focus{outline:none;box-shadow:0 6px 20px rgba(104,50,146,0.06);border-color:var(--admin-accent)}
+.team-row{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;padding:10px;border-radius:8px;background:#fafafa;border:1px solid #f0f0f0}
+.team-row .form-group{flex:1;min-width:180px}
+.team-row img{border-radius:8px;border:1px solid #eee;display:block;max-width:140px}
+.form-actions{margin-top:14px;display:flex;gap:12px}
+.admin-card .btn{border-radius:8px}
+.admin-card .btn.primary{background:var(--admin-accent);color:#fff;border:1px solid rgba(0,0,0,0.06)}
+.admin-card .btn.primary:hover{opacity:0.95}
+.muted{color:var(--muted)}
+
+/* small responsive tweaks */
+@media(max-width:800px){
+    .team-row{flex-direction:column}
+    .team-row img{max-width:180px}
+}
+
 @media(max-width:900px){
     .dashboard-grid{grid-template-columns:repeat(2,1fr)}
-    .admin-sidebar{display:none}
+    .admin-sidebar{display:none;position:static;height:auto}
+    .admin-main{margin-left:0}
 }

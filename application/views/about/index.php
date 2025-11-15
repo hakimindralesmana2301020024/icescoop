@@ -12,9 +12,9 @@
     <!-- Hero / Page title -->
     <section class="about-hero">
         <div class="container about-hero-inner">
-            <h1 class="about-hero-title">About Us</h1>
+            <h1 class="about-hero-title"><?php echo htmlspecialchars($about['hero_title'] ?? 'About Us'); ?></h1>
             <div class="about-breadcrumb">
-                <span class="breadcrumb-pill">Home&nbsp;&nbsp;/&nbsp;&nbsp;About Us</span>
+                <span class="breadcrumb-pill">Home&nbsp;&nbsp;/&nbsp;&nbsp;<?php echo htmlspecialchars($about['hero_title'] ?? 'About Us'); ?></span>
             </div>
         </div>
     </section>
@@ -23,12 +23,16 @@
     <section class="container about-journey">
         <div class="relive-inner">
             <div class="relive-left">
-                <img src="<?php echo base_url('assets/images/placeholder.svg'); ?>" alt="Our story" class="about-hero-image"/>
+                <?php if (!empty($about['journey_image'])): ?>
+                    <img src="<?php echo base_url($about['journey_image']); ?>" alt="Our story" class="about-hero-image"/>
+                <?php else: ?>
+                    <img src="<?php echo base_url('assets/images/placeholder.svg'); ?>" alt="Our story" class="about-hero-image"/>
+                <?php endif; ?>
             </div>
             <div class="relive-right">
-                <h2 class="relive-title">Our <span class="accent">Journey</span> Began With a Simple Dream</h2>
-                <p class="relive-lead">Our goal is to make the best ice cream using only the finest, natural ingredients. From rich, creamy classics to adventurous new creations, every flavor is meticulously crafted in-house to ensure the highest quality and freshness.</p>
-                <p class="relive-lead">We take pride in offering a diverse range of options, including dairy-free, vegan, and gluten-free choices, so everyone can find their perfect scoop.</p>
+                <h2 class="relive-title"><?php echo htmlspecialchars($about['journey_title'] ?? 'Our <span class="accent">Journey</span> Began With a Simple Dream'); ?></h2>
+                <p class="relive-lead"><?php echo nl2br(htmlspecialchars($about['journey_lead1'] ?? 'Our goal is to make the best ice cream using only the finest, natural ingredients. From rich, creamy classics to adventurous new creations, every flavor is meticulously crafted in-house to ensure the highest quality and freshness.')); ?></p>
+                <p class="relive-lead"><?php echo nl2br(htmlspecialchars($about['journey_lead2'] ?? 'We take pride in offering a diverse range of options, including dairy-free, vegan, and gluten-free choices, so everyone can find their perfect scoop.')); ?></p>
                 <a href="#" class="btn primary">Read More</a>
             </div>
         </div>
@@ -38,12 +42,16 @@
     <section class="special about-mission">
         <div class="container special-inner">
             <div class="special-left">
-                <h2 class="special-title">Our Mission is to<br/>Create Moments</h2>
-                <p class="special-lead">We strive to foster a welcoming and joyful environment where customers of all ages can gather, celebrate, and make lasting memories. Our commitment extends beyond serving great ice cream.</p>
+                <h2 class="special-title"><?php echo htmlspecialchars($about['mission_title'] ?? "Our Mission is to<br/>Create Moments"); ?></h2>
+                <p class="special-lead"><?php echo nl2br(htmlspecialchars($about['mission_lead'] ?? 'We strive to foster a welcoming and joyful environment where customers of all ages can gather, celebrate, and make lasting memories. Our commitment extends beyond serving great ice cream.')); ?></p>
                 <a href="#" class="special-cta">Read More</a>
             </div>
             <div class="special-right">
-                <img src="<?php echo base_url('assets/images/placeholder.svg'); ?>" alt="Team enjoying" class="special-image"/>
+                <?php if (!empty($about['mission_image'])): ?>
+                    <img src="<?php echo base_url($about['mission_image']); ?>" alt="Team enjoying" class="special-image"/>
+                <?php else: ?>
+                    <img src="<?php echo base_url('assets/images/placeholder.svg'); ?>" alt="Team enjoying" class="special-image"/>
+                <?php endif; ?>
             </div>
         </div>
     </section>
@@ -55,21 +63,22 @@
             <p class="muted">Get to know the friendly faces behind your favorite flavors.</p>
 
             <div class="team-grid">
-                <div class="team-member">
-                    <img src="<?php echo base_url('assets/images/placeholder.svg'); ?>" alt="Marvin"/>
-                    <h4 class="team-name">Marvin Joner</h4>
-                    <div class="muted">Bakery Worker</div>
-                </div>
-                <div class="team-member">
-                    <img src="<?php echo base_url('assets/images/placeholder.svg'); ?>" alt="Patricia"/>
-                    <h4 class="team-name">Patricia Woodrum</h4>
-                    <div class="muted">Staff Worker</div>
-                </div>
-                <div class="team-member">
-                    <img src="<?php echo base_url('assets/images/placeholder.svg'); ?>" alt="Hannaz"/>
-                    <h4 class="team-name">Hannaz Stone</h4>
-                    <div class="muted">Shop Worker</div>
-                </div>
+                <?php $team = isset($about['team']) && is_array($about['team']) ? $about['team'] : [];
+                if (empty($team)) {
+                    // default hard-coded people (preserve original look when empty)
+                    $team = [
+                        ['name'=>'Marvin Joner','role'=>'Bakery Worker','image'=>base_url('assets/images/placeholder.svg')],
+                        ['name'=>'Patricia Woodrum','role'=>'Staff Worker','image'=>base_url('assets/images/placeholder.svg')],
+                        ['name'=>'Hannaz Stone','role'=>'Shop Worker','image'=>base_url('assets/images/placeholder.svg')],
+                    ];
+                }
+                foreach ($team as $m): ?>
+                    <div class="team-member">
+                        <img src="<?= htmlspecialchars( (strpos($m['image'] ?? '', 'http') === 0) ? $m['image'] : base_url($m['image'] ?? 'assets/images/placeholder.svg') ); ?>" alt="<?= htmlspecialchars($m['name'] ?? ''); ?>"/>
+                        <h4 class="team-name"><?= htmlspecialchars($m['name'] ?? ''); ?></h4>
+                        <div class="muted"><?= htmlspecialchars($m['role'] ?? ''); ?></div>
+                    </div>
+                <?php endforeach; ?>
             </div>
         </div>
     </section>

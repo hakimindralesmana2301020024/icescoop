@@ -22,6 +22,18 @@ CREATE TABLE `users` (
   UNIQUE KEY `ux_users_username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Pages table: stores simple site pages as JSON payload per slug
+DROP TABLE IF EXISTS `pages`;
+CREATE TABLE IF NOT EXISTS `pages` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `slug` varchar(100) NOT NULL,
+  `data` longtext NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `slug` (`slug`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- Example admin seed (recommended to create via the provided CLI script so password is hashed securely)
 -- Admin email set to icesooptpl@gmail.com per request. To create this admin with password
 -- `adminicescoop1234` (hashed) run the CLI helper included in `tools/create_admin.php`:

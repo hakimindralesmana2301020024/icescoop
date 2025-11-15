@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin - IcyTales</title>
+    <!-- Bootstrap for quick admin layout/styling -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUa6mY5yY2Qv3K6Zr6Y1b5Qb5Q1p6u0Q5p5Y5b1Q5p5Q" crossorigin="anonymous">
     <?php $admin_css = FCPATH . 'assets/css/admin.css'; ?>
     <link rel="stylesheet" href="<?= base_url('assets/css/admin.css') . '?v=' . (file_exists($admin_css) ? filemtime($admin_css) : time()); ?>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
@@ -21,11 +23,11 @@
                         <span>Menu</span>
                         <i class="bi bi-caret-down-fill sub-caret" aria-hidden="true"></i>
                     </button>
-                    <div class="admin-submenu" id="menu-sub-list" role="menu">
-                        <a href="#">Home</a>
-                        <a href="#">About</a>
-                        <a href="#">Menu</a>
-                        <a href="#">Blog</a>
+                        <div class="admin-submenu" id="menu-sub-list" role="menu">
+                        <a href="<?= base_url('index.php/admin'); ?>">Home</a>
+                        <a href="<?= base_url('index.php/admin/about'); ?>">About</a>
+                        <a href="<?= base_url('index.php/admin/menu'); ?>">Menu</a>
+                        <a href="<?= base_url('index.php/admin/blog'); ?>">Blog</a>
                     </div>
                 </div>
                 <a href="#"><i class="bi bi-basket"></i> Orders</a>

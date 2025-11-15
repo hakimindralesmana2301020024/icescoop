@@ -325,11 +325,34 @@ body{font-family: 'Archivo', Arial, sans-serif;margin:0;color:#212529;background
 .stat-number{font-family:'Berkshire Swash';font-size:44px;color:#0F0200}
 .stat-label{color:var(--muted);margin-top:8px}
 
-.about-team{padding:60px 0;background:linear-gradient(120deg,#fff,#F9F3F8)}
-.team-grid{display:flex;gap:40px;justify-content:center;margin-top:30px}
-.team-member{max-width:220px;text-align:center}
-.team-member img{width:160px;height:160px;border-radius:50%;object-fit:cover;box-shadow:0 10px 30px rgba(0,0,0,0.08)}
-.team-name{margin:12px 0 4px}
+.about-team{padding:80px 0 60px;background:linear-gradient(120deg,#fff,#F9F3F8);position:relative}
+.about-team .title{font-family:'Berkshire Swash',cursive;font-size:70px;text-align:center;margin:0 0 8px;color:#0F0200}
+.about-team .title .accent{color:var(--accent);font-weight:700}
+/* center the muted description under the title and limit width for readability */
+.about-team .muted{display:block;text-align:center;margin:0 auto 18px;max-width:700px;color:var(--muted)}
+.team-grid{display:flex;gap:60px;justify-content:center;align-items:flex-start;margin-top:34px}
+.team-member{width:260px;text-align:center}
+.team-member img{width:220px;height:220px;border-radius:50%;object-fit:cover;border:8px solid #fff;box-shadow:0 30px 60px rgba(16,24,40,0.10);display:block;margin:0 auto}
+.team-name{margin:14px 0 6px;font-family:'Poppins',sans-serif;font-size:18px;font-weight:700;color:#0F0200}
+.team-role{color:var(--muted);font-size:14px;margin-bottom:10px}
+.team-member .socials{display:flex;gap:10px;justify-content:center;margin-top:8px}
+.team-member .socials a{width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--accent);color:#fff;text-decoration:none;box-shadow:0 8px 26px rgba(248,61,142,0.12);font-size:14px}
+.team-member .socials a i{line-height:1}
+
+/* subtle arrows to match the provided design (visual only) */
+.about-team:before, .about-team:after{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,0.04);display:flex;align-items:center;justify-content:center;color:#333;font-size:18px}
+.about-team:before{content:'‹';left:24px}
+.about-team:after{content:'›';right:24px}
+
+@media(max-width:1000px){
+    .team-grid{gap:28px}
+    .team-member{width:220px}
+    .team-member img{width:180px;height:180px}
+}
+@media(max-width:700px){
+    .team-grid{flex-direction:column;align-items:center;gap:22px}
+    .about-team:before,.about-team:after{display:none}
+}
 
 .about-signup{padding:60px 0}
 .signup-form{display:flex;justify-content:center;gap:12px;margin-top:22px}
