@@ -4,7 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>IcyTales - Home</title>
-    <link rel="stylesheet" href="<?php echo base_url('assets/css/icecream.css'); ?>">
+    <?php $css_path = FCPATH . 'assets/css/icecream.css'; ?>
+    <link rel="stylesheet" href="<?php echo base_url('assets/css/icecream.css') . '?v=' . (file_exists($css_path) ? filemtime($css_path) : time()); ?>">
     <!-- Google Fonts: Poppins for navigation -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,8 +22,60 @@
                 <a href="<?= base_url('index.php/menu'); ?>">Menu</a>
                 <a href="<?= base_url('index.php/blog'); ?>">Blog</a>
                 <a href="<?= base_url('index.php/contact'); ?>" class="cta">Contact Us</a>
-                <a href="#" class="cta">Login</a>
+                <?php $ci =& get_instance(); $is_logged = $ci->session->userdata('logged_in'); $username = $ci->session->userdata('username');
+                      $return_url = current_url(); if (!empty($_SERVER['QUERY_STRING'])) { $return_url .= '?'.$_SERVER['QUERY_STRING']; }
+                ?>
+                <?php if ($is_logged): ?>
+                    <div class="user-menu" id="user-menu">
+                        <a href="#" class="user-toggle" id="user-toggle" aria-haspopup="true" aria-expanded="false" title="<?= htmlspecialchars($username); ?>">
+                            <i class="bi bi-person-circle" style="font-size:26px;vertical-align:middle"></i>
+                        </a>
+                        <div class="user-dropdown" id="user-dropdown" role="menu" aria-labelledby="user-toggle">
+                            <div class="user-item user-name">Hi, <?= htmlspecialchars($username); ?></div>
+                            <a class="user-item" href="<?= base_url('index.php/login/logout?return='.urlencode($return_url)); ?>">Logout</a>
+                        </div>
+                    </div>
+                <?php else: ?>
+                    <a href="<?= base_url('index.php/login'); ?>" class="cta">Login</a>
+                <?php endif; ?>
             </nav>
         </div>
     </header>
     <main class="site-main">
+
+    <script>
+    // Toggle the user dropdown on click and close when clicking outside
+    (function(){
+        var toggle = document.getElementById('user-toggle');
+        var menu = document.getElementById('user-menu');
+        if (!toggle || !menu) return;
+
+        toggle.addEventListener('click', function(e){
+            e.preventDefault();
+            var isOpen = menu.classList.contains('open');
+            if (isOpen) {
+                menu.classList.remove('open');
+                toggle.setAttribute('aria-expanded', 'false');
+            } else {
+                menu.classList.add('open');
+                toggle.setAttribute('aria-expanded', 'true');
+            }
+        });
+
+        // Close when clicking outside
+        document.addEventListener('click', function(e){
+            if (!menu.contains(e.target)) {
+                menu.classList.remove('open');
+                toggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        // Close on ESC
+        document.addEventListener('keydown', function(e){
+            if (e.key === 'Escape' || e.key === 'Esc') {
+                menu.classList.remove('open');
+                toggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+    })();
+    </script>

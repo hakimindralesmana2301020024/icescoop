@@ -156,6 +156,16 @@ body{font-family: 'Archivo', Arial, sans-serif;margin:0;color:#212529;background
 .logo{font-family:'Berkshire Swash', serif;color:var(--accent);font-size:32px}
 .main-nav a{margin-left:18px;color:#0F0200;text-decoration:none;font-family:'Poppins', Arial, sans-serif;font-weight:500}
 .main-nav .cta{background:var(--accent);color:#fff;padding:8px 16px;border-radius:22px;font-family:'Poppins', Arial, sans-serif;font-weight:600}
+.site-header .main-nav .user-menu{display:inline-block;position:relative}
+.site-header .main-nav .user-menu .user-toggle{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;cursor:pointer;background:transparent;border:none}
+/* position dropdown to the right of the icon (center-aligned vertically) */
+.site-header .main-nav .user-menu .user-dropdown{position:absolute;left:calc(100% + 8px);top:50%;transform:translateY(-50%);background:#fff;border-radius:12px;box-shadow:0 12px 36px rgba(0,0,0,0.12);min-width:160px;overflow:hidden;border:1px solid rgba(0,0,0,0.04);display:none;z-index:40}
+/* show dropdown only when parent has .open (toggled by JS) */
+.site-header .main-nav .user-menu.open .user-dropdown{display:block}
+.site-header .main-nav .user-menu .user-item{display:block;padding:10px 14px;color:#0F0200;text-decoration:none;font-family:'Archivo',sans-serif;font-size:14px;border-bottom:1px solid rgba(0,0,0,0.03)}
+.site-header .main-nav .user-menu .user-item.user-name{background:linear-gradient(90deg, rgba(248,61,142,0.03), transparent);font-weight:600}
+.site-header .main-nav .user-menu .user-item:last-child{border-bottom:none}
+
 .hero{background:linear-gradient(122.69deg,#EFD7EF 8%,#F5F9FC 39%);padding:80px 0}
 .hero .container{display:flex;align-items:center;justify-content:space-between}
 .hero-left{max-width:600px}
@@ -464,4 +474,57 @@ body{font-family: 'Archivo', Arial, sans-serif;margin:0;color:#212529;background
 @media(max-width:1000px){.posts-grid{grid-template-columns:repeat(1,1fr)}.blog-cats{overflow:auto;padding:10px 8px;gap:12px}}
 
 /* --------- End Blog Page Styles --------- */
+
+/* --------- Auth (Login / Register) Styles --------- */
+.auth-page{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(122.69deg,#F9F1F7 6%,#FFF9FB 40%);padding:60px 0}
+.auth-card{width:100%;max-width:960px;background:#fff;border-radius:18px;box-shadow:0 30px 80px rgba(104,50,146,0.06);display:flex;overflow:hidden}
+.auth-left{flex:1;padding:42px 48px}
+.auth-right{width:380px;background:linear-gradient(180deg,#FDF7FB 0%,#FFF 100%);display:flex;align-items:center;justify-content:center}
+.brand{font-family:'Berkshire Swash',cursive;color:var(--accent);font-size:28px;margin-bottom:6px}
+.auth-title{font-family:'Berkshire Swash',cursive;font-size:36px;margin:6px 0}
+.auth-sub{color:var(--muted);margin-bottom:18px}
+.auth-form{display:flex;flex-direction:column;gap:12px}
+.auth-form label{font-size:13px;color:#646464}
+.auth-form .input{padding:12px 14px;border-radius:12px;border:1px solid #eee;font-family:'Archivo',sans-serif}
+.auth-row{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
+.auth-row .checkbox{font-size:14px;color:#646464}
+.forgot{color:#683292;text-decoration:none}
+.btn.auth-btn{margin-top:8px;background:var(--accent);color:#fff;border:none;padding:12px 18px;border-radius:30px;font-weight:700;box-shadow:0 12px 36px rgba(248,61,142,0.18);cursor:pointer}
+.auth-foot{margin-top:14px;color:#646464}
+.auth-foot a{color:var(--accent);font-weight:700;text-decoration:none}
+.auth-illustration{width:260px;height:260px;background-image:radial-gradient(circle at 30% 30%, rgba(248,61,142,0.06), transparent 30%), url('../images/placeholder.svg');background-size:cover;background-position:center;border-radius:12px;box-shadow:inset 0 -10px 30px rgba(233,201,228,0.08)}
+.auth-illustration.reg{background-position:top right}
+
+@media(max-width:900px){
+    .auth-card{flex-direction:column}
+    .auth-right{width:100%;padding:26px}
+    .auth-illustration{width:180px;height:120px}
+}
+
+/* --------- End Auth Styles --------- */
+
+/* --------- Auth Enhancements (inputs, focus, micro-interactions) --------- */
+.auth-card{border:1px solid rgba(104,50,146,0.04)}
+.auth-form .input{transition:box-shadow .18s ease, border-color .18s, transform .12s ease}
+.auth-form .input:focus{box-shadow:0 10px 30px rgba(248,61,142,0.12);border-color:var(--accent);outline:none;transform:translateY(-1px)}
+.auth-form .input::placeholder{color:#d8b6d4}
+.auth-row .checkbox input{margin-right:8px}
+.btn.auth-btn{transition:transform .12s ease, box-shadow .12s ease}
+.btn.auth-btn:hover{transform:translateY(-3px);box-shadow:0 20px 48px rgba(248,61,142,0.22)}
+.auth-right{position:relative}
+.auth-right:before{content:'';position:absolute;left:-80px;top:-40px;width:240px;height:240px;background:radial-gradient(circle at 30% 30%, rgba(248,61,142,0.08), transparent 30%);border-radius:50%;pointer-events:none}
+.auth-right:after{content:'';position:absolute;right:-36px;bottom:-28px;width:160px;height:160px;background:linear-gradient(180deg, rgba(104,50,146,0.06), transparent);border-radius:50%;pointer-events:none}
+.auth-illustration{border-radius:12px;background-size:cover;background-position:center;box-shadow:0 8px 30px rgba(104,50,146,0.04)}
+.brand{letter-spacing:0.6px}
+.auth-title{font-size:40px}
+.auth-sub{font-size:15px}
+.auth-foot{margin-top:18px;color:#7a6a7f}
+.auth-foot a{padding-left:6px}
+
+@media(max-width:900px){
+    .auth-card{margin:20px}
+    .auth-left{padding:28px}
+}
+
+/* --------- End Auth Enhancements --------- */
 
