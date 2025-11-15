@@ -156,6 +156,9 @@ body{font-family: 'Archivo', Arial, sans-serif;margin:0;color:#212529;background
 .logo{font-family:'Berkshire Swash', serif;color:var(--accent);font-size:32px}
 .main-nav a{margin-left:18px;color:#0F0200;text-decoration:none;font-family:'Poppins', Arial, sans-serif;font-weight:500}
 .main-nav .cta{background:var(--accent);color:#fff;padding:8px 16px;border-radius:22px;font-family:'Poppins', Arial, sans-serif;font-weight:600}
+.main-nav .cart-link{position:relative;display:inline-flex;align-items:center;color:#0F0200;text-decoration:none;margin-left:14px}
+.main-nav .cart-link i{color:#0F0200}
+.main-nav .cart-badge{position:absolute;right:-6px;top:-6px;background:#F83D8E;color:#fff;border-radius:12px;padding:2px 6px;font-size:12px;font-weight:700}
 .site-header .main-nav .user-menu{display:inline-block;position:relative}
 .site-header .main-nav .user-menu .user-toggle{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;cursor:pointer;background:transparent;border:none}
 /* position dropdown to the right of the icon (center-aligned vertically) */

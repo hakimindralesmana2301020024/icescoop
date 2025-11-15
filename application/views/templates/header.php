@@ -21,14 +21,21 @@
                 <a href="<?= base_url('index.php/about'); ?>">About</a>
                 <a href="<?= base_url('index.php/menu'); ?>">Menu</a>
                 <a href="<?= base_url('index.php/blog'); ?>">Blog</a>
+                <?php $ci =& get_instance(); $cart_count = (isset($ci->session) ? $ci->session->userdata('cart_count') : 0) ?: 0; ?>
                 <a href="<?= base_url('index.php/contact'); ?>" class="cta">Contact Us</a>
-                <?php $ci =& get_instance(); $is_logged = $ci->session->userdata('logged_in'); $username = $ci->session->userdata('username');
-                      $return_url = current_url(); if (!empty($_SERVER['QUERY_STRING'])) { $return_url .= '?'.$_SERVER['QUERY_STRING']; }
-                ?>
+                    <?php $is_logged = (isset($ci->session) ? $ci->session->userdata('logged_in') : false); $username = (isset($ci->session) ? $ci->session->userdata('username') : '');
+                        $return_url = function_exists('current_url') ? current_url() : base_url(); if (!empty($_SERVER['QUERY_STRING'])) { $return_url .= '?'.$_SERVER['QUERY_STRING']; }
+                    ?>
+                <a href="<?= base_url('index.php/order/cart'); ?>" class="cart-link" title="Keranjang">
+                    <i class="bi bi-cart3" style="font-size:23px;vertical-align:middle"></i>
+                    <?php if ($cart_count > 0): ?>
+                        <span class="cart-badge"><?= htmlspecialchars($cart_count); ?></span>
+                    <?php endif; ?>
+                </a>
                 <?php if ($is_logged): ?>
                     <div class="user-menu" id="user-menu">
                         <a href="#" class="user-toggle" id="user-toggle" aria-haspopup="true" aria-expanded="false" title="<?= htmlspecialchars($username); ?>">
-                            <i class="bi bi-person-circle" style="font-size:26px;vertical-align:middle"></i>
+                            <i class="bi bi-person-circle" style="font-size:23px;vertical-align:middle"></i>
                         </a>
                         <div class="user-dropdown" id="user-dropdown" role="menu" aria-labelledby="user-toggle">
                             <div class="user-item user-name">Hi, <?= htmlspecialchars($username); ?></div>
