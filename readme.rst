@@ -15,3 +15,6 @@ http://localhost/icescoop/blog
 http://localhost/icescoop/index.php/blog/0
 
 http://localhost/icescoop/contact
+
+icesooptpl@gmail.com
+adminicescoop1234
