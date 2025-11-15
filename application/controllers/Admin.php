@@ -7,6 +7,14 @@ class Admin extends CI_Controller {
         parent::__construct();
         $this->load->library('session');
         $this->load->helper('url');
+        // Protect admin area: only allow logged-in users with role 'admin'
+        $user = $this->session->userdata();
+        if (empty($user) || empty($user['logged_in']) || (!isset($user['role']) || $user['role'] !== 'admin')) {
+            // redirect to login and return to requested admin page after login
+            $return = current_url();
+            redirect(base_url('index.php/login?return=' . urlencode($return)));
+            exit;
+        }
     }
 
     /**

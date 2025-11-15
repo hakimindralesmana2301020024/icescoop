@@ -22,10 +22,15 @@ CREATE TABLE `users` (
   UNIQUE KEY `ux_users_username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Example seed user (password is 'password' hashed using PHP password_hash())
--- To generate a hash in PHP: `echo password_hash('password', PASSWORD_DEFAULT);`
--- Replace the hash below with a real one before using in production.
-INSERT INTO `users` (`username`,`email`,`password`,`role`) VALUES
-('admin','admin@example.com','$2y$10$abcdefghijklmnopqrstuv0123456789ABCDEFGHijklmnopqrs','admin');
+-- Example admin seed (recommended to create via the provided CLI script so password is hashed securely)
+-- Admin email set to icesooptpl@gmail.com per request. To create this admin with password
+-- `adminicescoop1234` (hashed) run the CLI helper included in `tools/create_admin.php`:
+-- php tools/create_admin.php admin icesooptpl@gmail.com adminicescoop1234
+-- If you prefer to insert via SQL, generate a hash in PHP and replace <PASTE_HASH_HERE> below.
+-- Example (generate hash): php -r "echo password_hash('adminicescoop1234', PASSWORD_DEFAULT).PHP_EOL;"
+-- Then run this INSERT with the generated hash:
+-- INSERT INTO `users` (`username`,`email`,`password`,`role`) VALUES
+-- ('admin','icesooptpl@gmail.com','<PASTE_HASH_HERE>','admin');
+-- Note: the tools script will insert the admin directly into the configured database when run from project root.
 
 -- End of schema
