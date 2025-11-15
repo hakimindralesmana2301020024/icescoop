@@ -55,3 +55,12 @@ $route['translate_uri_dashes'] = FALSE;
 
 $route['blog/(:num)'] = 'blog/details/$1';
 $route['contact'] = 'home/contact';
+
+// Ensure admin subfolder controllers are reachable even if an `Admin` controller
+// exists in the root controllers directory. Map admin/blog -> admin/blog controller.
+$route['admin/blog'] = 'admin/blog';
+// Explicit CRUD routes to ensure links reach the admin subcontroller directly
+$route['admin/blog/create'] = 'admin/blog/create';
+$route['admin/blog/edit/(:num)'] = 'admin/blog/edit/$1';
+$route['admin/blog/delete/(:num)'] = 'admin/blog/delete/$1';
+$route['admin/blog/(:any)'] = 'admin/blog/$1';

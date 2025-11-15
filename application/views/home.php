@@ -14,7 +14,7 @@
 
 <section id="featured" class="featured container">
     <h2>Our Classic Favorites</h2>
-    <p class="muted">Check out our top products that our customers love.</p>
+    <p class="muted">Check out our top products that our customers loveeeeehh.</p>
     <div class="cards">
         <?php foreach($featured as $item): ?>
             <div class="card">

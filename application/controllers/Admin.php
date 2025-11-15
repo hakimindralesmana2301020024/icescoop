@@ -145,4 +145,142 @@ class Admin extends CI_Controller {
         $this->load->view('admin/about_edit', $data);
         $this->load->view('templates/admin_footer');
     }
+
+    public function blog()
+    {
+        $this->load->model('Blog_model');
+
+        // If GET delete param present -> perform delete
+        $delete_id = $this->input->get('delete');
+        if (!empty($delete_id) && is_numeric($delete_id)) {
+            $this->Blog_model->delete((int)$delete_id);
+            $this->session->set_flashdata('blog_success', 'Post deleted.');
+            redirect(base_url('index.php/admin/blog'));
+            return;
+        }
+
+        // If GET edit param present -> show edit form
+        $edit_id = $this->input->get('edit');
+        if (!empty($edit_id) && is_numeric($edit_id) && $this->input->method() !== 'post') {
+            $post = $this->Blog_model->get((int)$edit_id);
+            if (!$post) {
+                show_404();
+                return;
+            }
+            $data = ['post' => $post];
+            $this->load->view('templates/admin_header');
+            $this->load->view('admin/blog/form', $data);
+            $this->load->view('templates/admin_footer');
+            return;
+        }
+
+        // If POST with update param -> handle update
+        $update_id = $this->input->get('update');
+        if ($this->input->method() === 'post' && !empty($update_id) && is_numeric($update_id)) {
+            $id_to_update = (int)$update_id;
+            $title = $this->input->post('title', true);
+            $this->load->helper('url');
+            $slug = $this->input->post('slug', true) ?: url_title($title,'dash',true);
+            $excerpt = $this->input->post('excerpt', true);
+            $content_html = $this->input->post('content_html', false);
+            $content_delta = $this->input->post('content_delta', false);
+            $status = $this->input->post('status', true) ?: 'draft';
+            $is_featured = $this->input->post('is_featured') ? 1 : 0;
+
+            // ensure unique slug
+            $base_slug = $slug;
+            $i = 1;
+            while ($this->Blog_model->slug_exists($slug, $id_to_update)) {
+                $slug = $base_slug . '-' . $i++;
+            }
+
+            $update = [
+                'title' => $title,
+                'slug' => $slug,
+                'excerpt' => $excerpt,
+                'content_html' => $content_html,
+                'content_delta' => $content_delta,
+                'status' => $status,
+                'is_featured' => $is_featured,
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
+            $this->Blog_model->update($id_to_update, $update);
+            $dberr = $this->db->error();
+            $affected = $this->db->affected_rows();
+            if ($affected !== 0) {
+                $this->session->set_flashdata('blog_success', 'Post updated.');
+                redirect(base_url('index.php/admin/blog'));
+                return;
+            }
+            $msg = isset($dberr['message']) && $dberr['message'] ? $dberr['message'] : 'Unknown DB error or 0 affected rows';
+            $data = ['post' => $this->Blog_model->get($id_to_update), 'error_message' => 'Failed to update: ' . $msg];
+            $this->load->view('templates/admin_header');
+            $this->load->view('admin/blog/form', $data);
+            echo '<div style="color:#b00; padding:10px;">Debug: ' . htmlspecialchars($data['error_message']) . '</div>';
+            $this->load->view('templates/admin_footer');
+            return;
+        }
+
+        // If POST, handle create (proxy) so inline form submissions are accepted
+        if ($this->input->method() === 'post') {
+            $title = $this->input->post('title', true);
+            $this->load->helper('url');
+            $slug = $this->input->post('slug', true) ?: url_title($title,'dash',true);
+            $excerpt = $this->input->post('excerpt', true);
+            $content_html = $this->input->post('content_html', false);
+            $content_delta = $this->input->post('content_delta', false);
+            $status = $this->input->post('status', true) ?: 'draft';
+            $is_featured = $this->input->post('is_featured') ? 1 : 0;
+            $author_id = $this->session->userdata('id') ?: NULL;
+
+            // ensure unique slug
+            $base_slug = $slug;
+            $i = 1;
+            while ($this->Blog_model->slug_exists($slug)) {
+                $slug = $base_slug . '-' . $i++;
+            }
+
+            $insert = [
+                'title' => $title,
+                'slug' => $slug,
+                'excerpt' => $excerpt,
+                'content_html' => $content_html,
+                'content_delta' => $content_delta,
+                'author_id' => $author_id,
+                'status' => $status,
+                'is_featured' => $is_featured
+            ];
+            $id = $this->Blog_model->insert($insert);
+            $dberr = $this->db->error();
+            $affected = $this->db->affected_rows();
+            if ($id && $affected !== 0) {
+                $this->session->set_flashdata('blog_success', 'Post saved successfully.');
+                redirect(base_url('index.php/admin/blog'));
+                return;
+            }
+
+            $msg = isset($dberr['message']) && $dberr['message'] ? $dberr['message'] : 'Unknown DB error or 0 affected rows';
+            $data = [];
+            $data['post'] = [
+                'title' => $title,
+                'slug' => $slug,
+                'excerpt' => $excerpt,
+                'content_html' => $content_html,
+                'content_delta' => $content_delta,
+                'status' => $status,
+                'is_featured' => $is_featured
+            ];
+            $data['error_message'] = 'Failed to save post: ' . $msg;
+            $this->load->view('templates/admin_header');
+            $this->load->view('admin/blog/form', $data);
+            echo '<div style="color:#b00; padding:10px;">Debug: ' . htmlspecialchars($data['error_message']) . '</div>';
+            $this->load->view('templates/admin_footer');
+            return;
+        }
+
+        $data['posts'] = $this->Blog_model->get_all();
+        $this->load->view('templates/admin_header');
+        $this->load->view('admin/blog/index', $data);
+        $this->load->view('templates/admin_footer');
+    }
 }
