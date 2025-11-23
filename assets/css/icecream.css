@@ -398,6 +398,28 @@ body{font-family: 'Archivo', Arial, sans-serif;margin:0;color:#212529;background
 .cart-prod-info {display: flex; flex-direction: column;}
 .cart-prod-name {font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 600; color: #0F0200;}
 .cart-prod-meta {font-size: 13px; color: #646464;}
+
+/* Ice cream product card (matches provided design) */
+.icecard{background:#fff;border-radius:18px;padding:16px;box-shadow:0 12px 40px rgba(16,24,40,0.06);width:220px;position:relative;overflow:visible}
+.icecard .fav{position:absolute;left:12px;top:12px;width:38px;height:38px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,0.06);color:#F83D8E;font-size:18px}
+.icecard .ice-img{display:flex;align-items:center;justify-content:center;margin-top:8px}
+    .icecard .ice-img img{width:160px;height:140px;object-fit:cover;border-radius:12px;box-shadow:0 10px 36px rgba(0,0,0,0.07);background:#fff}
+.icecard .ice-info{padding:12px 6px 36px;text-align:left}
+.icecard .ice-title-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.icecard .ice-title{font-family:'Poppins',sans-serif;font-size:16px;font-weight:700;color:#0F0200;margin:6px 0;flex:1}
+.icecard .ice-rating{display:inline-flex;align-items:center;gap:6px;color:#F8B84E;font-weight:700;font-size:14px;white-space:nowrap}
+.icecard .ice-desc{color:var(--muted);font-size:13px;margin-top:8px}
+.icecard .ice-price{color:var(--accent);font-weight:800;font-size:18px;margin-top:10px}
+.icecard .ice-cart{position:absolute;right:12px;bottom:12px;background:var(--purple);width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 8px 24px rgba(104,50,146,0.14);border:none}
+.icecard .ice-cart:hover{background:#F83D8E}
+.icecard .fav svg{display:block}
+.icecard .ice-cart svg{width:18px;height:18px;display:block}
+
+@media(max-width:900px){
+    .cards{flex-wrap:wrap;justify-content:center}
+    .icecard{width:46%}
+}
+
 .accent {color: #F83D8E;}
 .qty-group {display: flex; align-items: center; gap: 0;}
 .qty-btn {background: #fff; border: 1.5px solid #eee; border-radius: 50%; width: 32px; height: 32px; font-size: 18px; color: #683292; cursor: pointer; transition: all .2s;}

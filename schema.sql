@@ -46,3 +46,22 @@ CREATE TABLE IF NOT EXISTS `pages` (
 -- Note: the tools script will insert the admin directly into the configured database when run from project root.
 
 -- End of schema
+
+-- Home table: structured storage for Home page content
+DROP TABLE IF EXISTS `home`;
+CREATE TABLE IF NOT EXISTS `home` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `hero_title` varchar(255) DEFAULT NULL,
+  `hero_subtitle` varchar(255) DEFAULT NULL,
+  `intro` text,
+  `hero_image` varchar(255) DEFAULT NULL,
+  `features` longtext DEFAULT NULL,
+  `featured_items` longtext DEFAULT NULL,
+  `categories` longtext DEFAULT NULL,
+  `best_sellers` longtext DEFAULT NULL,
+  `special` longtext DEFAULT NULL,
+  `testimonials` longtext DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

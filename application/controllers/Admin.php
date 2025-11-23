@@ -146,6 +146,195 @@ class Admin extends CI_Controller {
         $this->load->view('templates/admin_footer');
     }
 
+    /**
+     * Edit Home page (hero, featured items, categories, best sellers, special, testimonials)
+     */
+    public function home()
+    {
+        $this->load->model('Home_model');
+
+        // create images dir if missing
+        $img_dir = FCPATH . 'assets/images/home/';
+        if (!is_dir($img_dir)) {
+            @mkdir($img_dir, 0755, true);
+        }
+
+        if ($this->input->method() === 'post') {
+            $payload = [];
+            $existing = $this->Home_model->get() ?: [];
+
+            // Hero
+            $hero_title = $this->input->post('hero_title', true);
+            $hero_subtitle = $this->input->post('hero_subtitle', true);
+            $intro = $this->input->post('intro', true);
+            if ($hero_title !== null) $payload['hero_title'] = $hero_title;
+            if ($hero_subtitle !== null) $payload['hero_subtitle'] = $hero_subtitle;
+            if ($intro !== null) $payload['intro'] = $intro;
+
+            // Featured items (up to 6)
+            $featured = [];
+            $f_titles = $this->input->post('featured_title');
+            $f_descs = $this->input->post('featured_desc');
+            $f_prices = $this->input->post('featured_price');
+            $f_ratings = $this->input->post('featured_rating');
+            for ($i=0;$i<6;$i++) {
+                $item = ['title'=>'','desc'=>'','price'=>'','rating'=>'','image'=>''];
+                if (is_array($f_titles) && isset($f_titles[$i])) $item['title'] = $this->input->post('featured_title['.$i.']', true);
+                if (is_array($f_descs) && isset($f_descs[$i])) $item['desc'] = $this->input->post('featured_desc['.$i.']', true);
+                if (is_array($f_prices) && isset($f_prices[$i])) $item['price'] = $this->input->post('featured_price['.$i.']', true);
+                if (is_array($f_ratings) && isset($f_ratings[$i])) $item['rating'] = $this->input->post('featured_rating['.$i.']', true);
+                $featured[$i] = $item;
+            }
+
+            // Categories (up to 6)
+            $categories = [];
+            $c_names = $this->input->post('category_name');
+            for ($i=0;$i<6;$i++) {
+                $cat = ['name'=>'','image'=>''];
+                if (is_array($c_names) && isset($c_names[$i])) $cat['name'] = $this->input->post('category_name['.$i.']', true);
+                $categories[$i] = $cat;
+            }
+
+            // Best sellers (up to 6)
+            $best = [];
+            $bs_titles = $this->input->post('bs_title');
+            $bs_prices = $this->input->post('bs_price');
+            for ($i=0;$i<6;$i++) {
+                $b = ['title'=>'','price'=>'','image'=>''];
+                if (is_array($bs_titles) && isset($bs_titles[$i])) $b['title'] = $this->input->post('bs_title['.$i.']', true);
+                if (is_array($bs_prices) && isset($bs_prices[$i])) $b['price'] = $this->input->post('bs_price['.$i.']', true);
+                $best[$i] = $b;
+            }
+
+            // Special section
+            $special = [];
+            $special['title'] = $this->input->post('special_title', true);
+            $special['sub'] = $this->input->post('special_sub', true);
+            $special['lead'] = $this->input->post('special_lead', true);
+
+            // Testimonials (up to 5)
+            $testimonials = [];
+            $t_texts = $this->input->post('test_text');
+            $t_names = $this->input->post('test_name');
+            $t_roles = $this->input->post('test_role');
+            for ($i=0;$i<5;$i++) {
+                $t = ['text'=>'','name'=>'','role'=>''];
+                if (is_array($t_texts) && isset($t_texts[$i])) $t['text'] = $this->input->post('test_text['.$i.']', true);
+                if (is_array($t_names) && isset($t_names[$i])) $t['name'] = $this->input->post('test_name['.$i.']', true);
+                if (is_array($t_roles) && isset($t_roles[$i])) $t['role'] = $this->input->post('test_role['.$i.']', true);
+                $testimonials[$i] = $t;
+            }
+
+            // Handle uploads: hero_image, featured_image_0..5, category_image_0..5, bs_image_0..5, special_image, test_image_0..4
+            if (!empty($_FILES['hero_image']) && $_FILES['hero_image']['error'] === UPLOAD_ERR_OK) {
+                $tmp = $_FILES['hero_image']['tmp_name'];
+                $name = 'hero_' . time() . '_' . basename($_FILES['hero_image']['name']);
+                $dest = $img_dir . $name;
+                if (@move_uploaded_file($tmp, $dest)) {
+                    if (!empty($existing['hero_image'])) {
+                        $prev = FCPATH . ltrim($existing['hero_image'], '/');
+                        $home_base = realpath(FCPATH . 'assets/images/home/');
+                        if ($home_base && strpos(realpath($prev), $home_base) === 0 && is_file($prev)) @unlink($prev);
+                    }
+                    $payload['hero_image'] = 'assets/images/home/' . $name;
+                }
+            }
+
+            // generic helper to process numbered file inputs
+            $process_numbered = function($prefix, &$targetArray, $existingArray) use ($img_dir) {
+                for ($i=0;$i<count($targetArray);$i++) {
+                    $key = $prefix . $i;
+                    if (!empty($_FILES[$key]) && $_FILES[$key]['error'] === UPLOAD_ERR_OK) {
+                        $tmp = $_FILES[$key]['tmp_name'];
+                        $name = $prefix . '_' . $i . '_' . time() . '_' . basename($_FILES[$key]['name']);
+                        $dest = $img_dir . $name;
+                        if (@move_uploaded_file($tmp, $dest)) {
+                            if (!empty($existingArray) && isset($existingArray[$i]) && !empty($existingArray[$i]['image'])) {
+                                $prev = FCPATH . ltrim($existingArray[$i]['image'], '/');
+                                $home_base = realpath(FCPATH . 'assets/images/home/');
+                                if ($home_base && strpos(realpath($prev), $home_base) === 0 && is_file($prev)) @unlink($prev);
+                            }
+                            $targetArray[$i]['image'] = 'assets/images/home/' . $name;
+                        }
+                    } else {
+                        // preserve existing image if not replaced
+                        if (!empty($existingArray) && isset($existingArray[$i]) && !empty($existingArray[$i]['image'])) {
+                            $targetArray[$i]['image'] = $existingArray[$i]['image'];
+                        }
+                    }
+                }
+            };
+
+            $existing_feat = isset($existing['featured_items']) ? $existing['featured_items'] : [];
+            $process_numbered('featured_image_', $featured, $existing_feat);
+
+            $existing_cats = isset($existing['categories']) ? $existing['categories'] : [];
+            $process_numbered('category_image_', $categories, $existing_cats);
+
+            $existing_bs = isset($existing['best_sellers']) ? $existing['best_sellers'] : [];
+            $process_numbered('bs_image_', $best, $existing_bs);
+
+            // special image
+            if (!empty($_FILES['special_image']) && $_FILES['special_image']['error'] === UPLOAD_ERR_OK) {
+                $tmp = $_FILES['special_image']['tmp_name'];
+                $name = 'special_' . time() . '_' . basename($_FILES['special_image']['name']);
+                $dest = $img_dir . $name;
+                if (@move_uploaded_file($tmp, $dest)) {
+                    if (!empty($existing['special']['image'])) {
+                        $prev = FCPATH . ltrim($existing['special']['image'], '/');
+                        $home_base = realpath(FCPATH . 'assets/images/home/');
+                        if ($home_base && strpos(realpath($prev), $home_base) === 0 && is_file($prev)) @unlink($prev);
+                    }
+                    $special['image'] = 'assets/images/home/' . $name;
+                }
+            } else {
+                if (!empty($existing['special']['image'])) $special['image'] = $existing['special']['image'];
+            }
+
+            // testimonials have no images by default, preserve existing if any
+            $existing_tests = isset($existing['testimonials']) ? $existing['testimonials'] : [];
+            for ($i=0;$i<count($testimonials);$i++) {
+                if (!empty($existing_tests[$i]) && isset($existing_tests[$i]['photo'])) {
+                    $testimonials[$i]['photo'] = $existing_tests[$i]['photo'];
+                }
+            }
+
+            $payload['featured_items'] = array_values(array_filter($featured, function($v){ return !empty($v['title']) || !empty($v['desc']) || !empty($v['image']); }));
+            $payload['categories'] = array_values(array_filter($categories, function($v){ return !empty($v['name']) || !empty($v['image']); }));
+            $payload['best_sellers'] = array_values(array_filter($best, function($v){ return !empty($v['title']) || !empty($v['price']) || !empty($v['image']); }));
+            $payload['special'] = $special;
+            $payload['testimonials'] = array_values(array_filter($testimonials, function($v){ return !empty($v['text']); }));
+
+            // features (existing small feature blocks) preserved if present in POST
+            $posted_features = $this->input->post('feature_title');
+            $features = [];
+            if (is_array($posted_features)) {
+                for ($i=0;$i<count($posted_features);$i++) {
+                    $features[$i] = [
+                        'title' => $this->input->post('feature_title['.$i.']', true),
+                        'desc' => $this->input->post('feature_desc['.$i.']', true),
+                        'image' => isset($existing['features'][$i]['image']) ? $existing['features'][$i]['image'] : ''
+                    ];
+                }
+                $payload['features'] = $features;
+            }
+
+            // Merge and save
+            $merged = array_merge($existing, $payload);
+            $this->Home_model->save($merged);
+            $this->session->set_flashdata('admin_msg', 'Home page updated.');
+            redirect(base_url('index.php/admin/home'));
+            return;
+        }
+
+        // GET -> render form
+        $home = $this->Home_model->get();
+        $data = ['home' => $home];
+        $this->load->view('templates/admin_header');
+        $this->load->view('admin/home_edit', $data);
+        $this->load->view('templates/admin_footer');
+    }
+
     public function blog()
     {
         $this->load->model('Blog_model');

@@ -71,3 +71,77 @@ if ($check && $check->num_rows > 0) {
 }
 
 $mysqli->close();
+
+// Also seed a default `home` row into the structured `home` table
+$mysqli = new mysqli($host, $user, $pass, $name);
+if ($mysqli->connect_errno) {
+    fwrite(STDERR, "DB connect error: " . $mysqli->connect_error . PHP_EOL);
+    exit(1);
+}
+
+$payload = [
+    'hero_title' => 'Welcome to IceScoop',
+    'hero_subtitle' => 'Discover Sweet Delights',
+    'intro' => 'Relish the timeless taste of handcrafted ice cream, made with passion and the finest ingredients.',
+    'hero_image' => 'assets/images/placeholder.svg',
+    'featured_items' => [
+        ['title'=>'Classic Scoop','desc'=>'Rich and creamy vanilla','price'=>'$3.50','rating'=>'4.8','image'=>'assets/images/placeholder.svg'],
+        ['title'=>'Chocolate Fudge','desc'=>'Decadent and bold','price'=>'$4.00','rating'=>'4.9','image'=>'assets/images/placeholder.svg'],
+        ['title'=>'Strawberry Joy','desc'=>'Fresh strawberry swirls','price'=>'$3.75','rating'=>'4.7','image'=>'assets/images/placeholder.svg']
+    ],
+    'categories' => [
+        ['name'=>'Classic','image'=>'assets/images/placeholder.svg'],
+        ['name'=>'Seasonal','image'=>'assets/images/placeholder.svg'],
+        ['name'=>'Vegan','image'=>'assets/images/placeholder.svg']
+    ],
+    'best_sellers' => [
+        ['title'=>'Vanilla','price'=>'$3.50','image'=>'assets/images/placeholder.svg'],
+        ['title'=>'Chocolate','price'=>'$4.00','image'=>'assets/images/placeholder.svg']
+    ],
+    'special' => ['title'=>'Summer Special!','sub'=>'Buy One Sundae, Get One 50% Off!','lead'=>'Use code: SUMMER50','image'=>'assets/images/placeholder.svg'],
+    'testimonials' => [
+        ['text'=>'The best ice cream ever!','name'=>'Amina','role'=>'Customer'],
+        ['text'=>'Loved the seasonal flavor.','name'=>'Rian','role'=>'Customer']
+    ]
+];
+
+$json = $mysqli->real_escape_string(json_encode($payload, JSON_UNESCAPED_UNICODE));
+
+$create_sql = "CREATE TABLE IF NOT EXISTS `home` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `hero_title` varchar(255) DEFAULT NULL,
+  `hero_subtitle` varchar(255) DEFAULT NULL,
+  `intro` text,
+  `hero_image` varchar(255) DEFAULT NULL,
+  `features` longtext DEFAULT NULL,
+  `featured_items` longtext DEFAULT NULL,
+  `categories` longtext DEFAULT NULL,
+  `best_sellers` longtext DEFAULT NULL,
+  `special` longtext DEFAULT NULL,
+  `testimonials` longtext DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+$mysqli->query($create_sql);
+
+$check = $mysqli->query("SELECT id FROM home LIMIT 1");
+if ($check && $check->num_rows > 0) {
+    $row = $check->fetch_assoc();
+    $id = (int)$row['id'];
+    $sql = "UPDATE home SET hero_title='" . $mysqli->real_escape_string($payload['hero_title']) . "', hero_subtitle='" . $mysqli->real_escape_string($payload['hero_subtitle']) . "', intro='" . $mysqli->real_escape_string($payload['intro']) . "', hero_image='" . $mysqli->real_escape_string($payload['hero_image']) . "', featured_items='" . $json . "', categories='" . $json . "', best_sellers='" . $json . "', special='" . $json . "', testimonials='" . $json . "', updated_at=NOW() WHERE id=" . $id;
+    if ($mysqli->query($sql)) {
+        echo "Updated existing home row id=$id\n";
+    } else {
+        echo "Failed to update home table: " . $mysqli->error . PHP_EOL;
+    }
+} else {
+    $sql = "INSERT INTO home (hero_title, hero_subtitle, intro, hero_image, featured_items, categories, best_sellers, special, testimonials, created_at, updated_at) VALUES ('" . $mysqli->real_escape_string($payload['hero_title']) . "', '" . $mysqli->real_escape_string($payload['hero_subtitle']) . "', '" . $mysqli->real_escape_string($payload['intro']) . "', '" . $mysqli->real_escape_string($payload['hero_image']) . "', '" . $json . "', '" . $json . "', '" . $json . "', '" . $json . "', '" . $json . "', NOW(), NOW())";
+    if ($mysqli->query($sql)) {
+        echo "Inserted home row id=" . $mysqli->insert_id . "\n";
+    } else {
+        echo "Failed to insert home: " . $mysqli->error . PHP_EOL;
+    }
+}
+
+$mysqli->close();

@@ -24,7 +24,7 @@
                         <i class="bi bi-caret-down-fill sub-caret" aria-hidden="true"></i>
                     </button>
                         <div class="admin-submenu" id="menu-sub-list" role="menu">
-                        <a href="<?= base_url('index.php/admin'); ?>">Home</a>
+                        <a href="<?= base_url('index.php/admin/home'); ?>">Home</a>
                         <a href="<?= base_url('index.php/admin/about'); ?>">About</a>
                         <a href="<?= base_url('index.php/admin/menu'); ?>">Menu</a>
                         <a href="<?= base_url('index.php/admin/blog'); ?>">Blog</a>
