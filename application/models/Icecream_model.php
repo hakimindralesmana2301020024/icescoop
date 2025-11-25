@@ -71,4 +71,27 @@ class Icecream_model extends CI_Model {
         ];
     }
 
+    /**
+     * Return featured products with sample sales values for pie chart.
+     * If real sales data exists, replace logic to read from orders table.
+     */
+    public function get_featured_with_sales($limit = 6)
+    {
+        $items = $this->get_featured();
+        $out = [];
+        // sample fallback sales values (descending)
+        $sample_sales = [120, 95, 78, 60, 45, 30];
+        for ($i = 0; $i < $limit; $i++) {
+            if (!isset($items[$i])) break;
+            $title = $items[$i]['title'];
+            $value = isset($items[$i]['sales']) ? (int)$items[$i]['sales'] : ($sample_sales[$i] ?? 10);
+            $out[] = [
+                'title' => $title,
+                'value' => $value,
+                'image' => $items[$i]['image'] ?? base_url('assets/images/placeholder.svg')
+            ];
+        }
+        return $out;
+    }
+
 }
