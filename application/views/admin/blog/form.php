@@ -2,6 +2,17 @@
     <?php $is_edit = !empty($post); ?>
     <h2><?= $is_edit ? 'Edit Post' : 'Create Post'; ?></h2>
 
+    <?php if ($this->session->flashdata('blog_error')): ?>
+        <div style="background:#ffd6d6;border:1px solid #ff9b9b;padding:10px;margin:10px 0;color:#700;">
+            <?= htmlspecialchars($this->session->flashdata('blog_error')); ?>
+        </div>
+    <?php endif; ?>
+    <?php if ($this->session->flashdata('blog_success')): ?>
+        <div style="background:#e6ffea;border:1px solid #b7efc1;padding:10px;margin:10px 0;color:#066;">
+            <?= htmlspecialchars($this->session->flashdata('blog_success')); ?>
+        </div>
+    <?php endif; ?>
+
     <?php
     // Determine action: create vs edit. When included inline, ensure create posts go to admin/blog/create
     if ($is_edit) {
@@ -12,7 +23,7 @@
         $action = base_url('index.php/admin/blog');
     }
     ?>
-    <form method="post" action="<?= $action; ?>" onsubmit="return submitQuill();">
+    <form method="post" action="<?= $action; ?>" onsubmit="return submitQuill();" enctype="multipart/form-data">
         <div>
             <label>Title</label>
             <input type="text" name="title" id="title" value="<?= $is_edit ? htmlspecialchars($post['title']) : ''; ?>" required style="width:100%; padding:8px;">
@@ -24,6 +35,21 @@
         <div style="margin-top:.5rem;">
             <label>Excerpt</label>
             <textarea name="excerpt" rows="2" style="width:100%;"><?= $is_edit ? htmlspecialchars($post['excerpt']) : ''; ?></textarea>
+        </div>
+
+        <div style="margin-top:.5rem; display:flex; gap:12px; align-items:center;">
+            <div>
+                <label>Cover Image</label>
+                <input type="file" name="featured_image" accept="image/*">
+            </div>
+            <?php if ($is_edit && !empty($post['featured_image'])): ?>
+                <div style="max-width:220px;">
+                    <label>Current cover</label>
+                    <div style="border:1px solid #ddd;padding:6px;background:#fff;">
+                        <img src="<?= base_url('assets/images/' . $post['featured_image']); ?>" alt="cover" style="width:200px;height:auto;display:block;">
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
 
         <div style="margin-top:.5rem;">
