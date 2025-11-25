@@ -54,6 +54,8 @@ $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
 $route['blog/(:num)'] = 'blog/details/$1';
+// Accept non-numeric slugs and route to details as well
+$route['blog/(:any)'] = 'blog/details/$1';
 $route['contact'] = 'home/contact';
 
 // Ensure admin subfolder controllers are reachable even if an `Admin` controller
