@@ -393,9 +393,84 @@ class Admin extends CI_Controller {
                 'is_featured' => $is_featured,
                 'updated_at' => date('Y-m-d H:i:s')
             ];
+            // Handle featured image upload on update (Admin proxy)
+            if (!empty($_FILES) && isset($_FILES['featured_image'])) {
+                $fileErr = $_FILES['featured_image']['error'];
+                if ($fileErr === UPLOAD_ERR_OK) {
+                    $up = $_FILES['featured_image'];
+                    $tmp = $up['tmp_name'];
+                    $orig = $up['name'];
+                    $ext = pathinfo($orig, PATHINFO_EXTENSION);
+                    $safe = preg_replace('/[^a-z0-9\-_.]/i', '-', pathinfo($orig, PATHINFO_FILENAME));
+                    $filename = time() . '_' . $safe . ($ext ? '.' . $ext : '');
+                    $destDir = rtrim(FCPATH, '\\/') . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR;
+                    if (!is_dir($destDir)) @mkdir($destDir, 0755, true);
+                    $dest = $destDir . $filename;
+                    $i = 1;
+                    while (file_exists($dest)) {
+                        $filename = time() . '_' . $safe . '-' . $i . ($ext ? '.' . $ext : '');
+                        $dest = $destDir . $filename;
+                        $i++;
+                    }
+                    if (is_uploaded_file($tmp) && @move_uploaded_file($tmp, $dest)) {
+                        $update['featured_image'] = $filename;
+                        log_message('debug', '[admin/blog proxy update] uploaded featured_image=' . $filename . ' for post id=' . $id_to_update);
+                    } else {
+                        $msg = 'Failed to move uploaded file to ' . $dest;
+                        log_message('error', '[admin/blog proxy update] ' . $msg);
+                        $this->session->set_flashdata('blog_error', 'Cover image upload failed: unable to save file.');
+                    }
+                } else {
+                    log_message('error', '[admin/blog proxy update] upload error code=' . $fileErr);
+                    $this->session->set_flashdata('blog_error', 'Cover image upload failed (upload error code ' . $fileErr . ').');
+                }
+            }
             $this->Blog_model->update($id_to_update, $update);
             $dberr = $this->db->error();
             $affected = $this->db->affected_rows();
+            // If no featured_image provided during edit, try extract from content_html (data-URI or local asset)
+            if (empty($update['featured_image']) && !empty($update['content_html'])) {
+                if (preg_match('/<img[^>]+src=["\']?([^"\' >]+)["\']?[^>]*>/i', $update['content_html'], $m)) {
+                    $src = $m[1];
+                    // data URI
+                    if (strpos($src, 'data:') === 0 && preg_match('/^data:([^;]+);base64,(.+)$/', $src, $d)) {
+                        $mime = $d[1];
+                        $b64 = $d[2];
+                        $ext = '';
+                        switch (strtolower($mime)) {
+                            case 'image/jpeg': $ext = 'jpg'; break;
+                            case 'image/jpg': $ext = 'jpg'; break;
+                            case 'image/png': $ext = 'png'; break;
+                            case 'image/gif': $ext = 'gif'; break;
+                            case 'image/webp': $ext = 'webp'; break;
+                            default:
+                                $parts = explode('/', $mime);
+                                $ext = isset($parts[1]) ? preg_replace('/[^a-z0-9]/', '', $parts[1]) : 'bin';
+                        }
+                        $basename = 'cover_' . $id_to_update . '_' . time() . '.' . $ext;
+                        $destDir = rtrim(FCPATH, '\\/') . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR;
+                        if (!is_dir($destDir)) @mkdir($destDir, 0755, true);
+                        $dest = $destDir . $basename;
+                        $decoded = base64_decode($b64);
+                        if ($decoded !== false && @file_put_contents($dest, $decoded) !== false) {
+                            $this->Blog_model->update($id_to_update, ['featured_image' => $basename]);
+                            log_message('debug', '[admin/blog proxy update] saved data-URI as ' . $basename . ' for id=' . $id_to_update);
+                        }
+                    } elseif (strpos($src, '/assets/images/') !== false) {
+                        $basename = basename($src);
+                        if ($basename) {
+                            $this->Blog_model->update($id_to_update, ['featured_image' => $basename]);
+                            log_message('debug', '[admin/blog proxy update] set existing image ' . $basename . ' for id=' . $id_to_update);
+                        }
+                    } else {
+                        $basename = basename($src);
+                        if ($basename) {
+                            $this->Blog_model->update($id_to_update, ['featured_image' => $basename]);
+                            log_message('debug', '[admin/blog proxy update] set relative image ' . $basename . ' for id=' . $id_to_update);
+                        }
+                    }
+                }
+            }
             if ($affected !== 0) {
                 $this->session->set_flashdata('blog_success', 'Post updated.');
                 redirect(base_url('index.php/admin/blog'));
@@ -435,14 +510,89 @@ class Admin extends CI_Controller {
                 'excerpt' => $excerpt,
                 'content_html' => $content_html,
                 'content_delta' => $content_delta,
+                'featured_image' => null,
                 'author_id' => $author_id,
                 'status' => $status,
                 'is_featured' => $is_featured
             ];
+            // Handle featured image upload on create (Admin proxy)
+            if (!empty($_FILES) && isset($_FILES['featured_image'])) {
+                $fileErr = $_FILES['featured_image']['error'];
+                if ($fileErr === UPLOAD_ERR_OK) {
+                    $up = $_FILES['featured_image'];
+                    $tmp = $up['tmp_name'];
+                    $orig = $up['name'];
+                    $ext = pathinfo($orig, PATHINFO_EXTENSION);
+                    $safe = preg_replace('/[^a-z0-9\-_.]/i', '-', pathinfo($orig, PATHINFO_FILENAME));
+                    $filename = time() . '_' . $safe . ($ext ? '.' . $ext : '');
+                    $destDir = rtrim(FCPATH, '\\/') . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR;
+                    if (!is_dir($destDir)) @mkdir($destDir, 0755, true);
+                    $dest = $destDir . $filename;
+                    $i = 1;
+                    while (file_exists($dest)) {
+                        $filename = time() . '_' . $safe . '-' . $i . ($ext ? '.' . $ext : '');
+                        $dest = $destDir . $filename;
+                        $i++;
+                    }
+                    if (is_uploaded_file($tmp) && @move_uploaded_file($tmp, $dest)) {
+                        $insert['featured_image'] = $filename;
+                        log_message('debug', '[admin/blog proxy create] uploaded featured_image=' . $filename);
+                    } else {
+                        $msg = 'Failed to move uploaded file to ' . $dest;
+                        log_message('error', '[admin/blog proxy create] ' . $msg);
+                        $this->session->set_flashdata('blog_error', 'Cover image upload failed: unable to save file.');
+                    }
+                } else {
+                    log_message('error', '[admin/blog proxy create] upload error code=' . $fileErr);
+                    $this->session->set_flashdata('blog_error', 'Cover image upload failed (upload error code ' . $fileErr . ').');
+                }
+            }
             $id = $this->Blog_model->insert($insert);
             $dberr = $this->db->error();
             $affected = $this->db->affected_rows();
             if ($id && $affected !== 0) {
+                // If no featured_image was set via upload, try extracting from content_html
+                if (empty($insert['featured_image']) && !empty($insert['content_html'])) {
+                    if (preg_match('/<img[^>]+src=["\']?([^"\' >]+)["\']?[^>]*>/i', $insert['content_html'], $m)) {
+                        $src = $m[1];
+                        if (strpos($src, 'data:') === 0 && preg_match('/^data:([^;]+);base64,(.+)$/', $src, $d)) {
+                            $mime = $d[1];
+                            $b64 = $d[2];
+                            $ext = '';
+                            switch (strtolower($mime)) {
+                                case 'image/jpeg': $ext = 'jpg'; break;
+                                case 'image/jpg': $ext = 'jpg'; break;
+                                case 'image/png': $ext = 'png'; break;
+                                case 'image/gif': $ext = 'gif'; break;
+                                case 'image/webp': $ext = 'webp'; break;
+                                default:
+                                    $parts = explode('/', $mime);
+                                    $ext = isset($parts[1]) ? preg_replace('/[^a-z0-9]/', '', $parts[1]) : 'bin';
+                            }
+                            $basename = 'cover_' . $id . '_' . time() . '.' . $ext;
+                            $destDir = rtrim(FCPATH, '\\/') . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR;
+                            if (!is_dir($destDir)) @mkdir($destDir, 0755, true);
+                            $dest = $destDir . $basename;
+                            $decoded = base64_decode($b64);
+                            if ($decoded !== false && @file_put_contents($dest, $decoded) !== false) {
+                                $this->Blog_model->update($id, ['featured_image' => $basename]);
+                                log_message('debug', '[admin/blog proxy create] saved data-URI as ' . $basename . ' for id=' . $id);
+                            }
+                        } elseif (strpos($src, '/assets/images/') !== false) {
+                            $basename = basename($src);
+                            if ($basename) {
+                                $this->Blog_model->update($id, ['featured_image' => $basename]);
+                                log_message('debug', '[admin/blog proxy create] set existing image ' . $basename . ' for id=' . $id);
+                            }
+                        } else {
+                            $basename = basename($src);
+                            if ($basename) {
+                                $this->Blog_model->update($id, ['featured_image' => $basename]);
+                                log_message('debug', '[admin/blog proxy create] set relative image ' . $basename . ' for id=' . $id);
+                            }
+                        }
+                    }
+                }
                 $this->session->set_flashdata('blog_success', 'Post saved successfully.');
                 redirect(base_url('index.php/admin/blog'));
                 return;
