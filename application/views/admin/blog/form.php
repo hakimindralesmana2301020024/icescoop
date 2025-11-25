@@ -54,8 +54,17 @@
 
         <div style="margin-top:.5rem;">
             <label>Content</label>
-            <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-            <div id="quill-editor" style="height:320px; background:#fff;"></div>
+                <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+                <style>
+                    /* contain floated images inside the editor so they don't overlap footer */
+                    #quill-editor { overflow: auto; box-sizing: border-box; }
+                    #quill-editor::after { content: ""; display: table; clear: both; }
+                    /* ensure our alignment class doesn't break responsiveness */
+                    #quill-editor img.quill-auto-aligned { max-width: 100%; height: auto; }
+                    /* make editor text justified (rata kiri kanan) by default */
+                    #quill-editor .ql-editor { text-align: justify; text-justify: inter-word; }
+                </style>
+                <div id="quill-editor" style="height:320px; background:#fff;"></div>
                 <input type="file" id="quill-image-input" accept="image/*" style="display:none">
             <input type="hidden" name="content_html" id="content_html">
             <input type="hidden" name="content_delta" id="content_delta">
@@ -104,8 +113,15 @@
             var reader = new FileReader();
             reader.onload = function(e) {
                 var range = quill.getSelection(true);
+                // insert image embed at current selection
                 quill.insertEmbed(range.index, 'image', e.target.result, 'user');
-                quill.setSelection(range.index + 1);
+                // insert a newline after the image so the next typed text wraps beside the floated image
+                quill.insertText(range.index + 1, '\n', 'user');
+                // place caret in the newly created paragraph after the image
+                quill.setSelection(range.index + 2, 0);
+                quill.focus();
+                // adjust inserted images (alternate left/right)
+                setTimeout(function(){ adjustQuillImages(); }, 50);
                 imageInput.value = '';
             };
             reader.readAsDataURL(file);
@@ -114,6 +130,38 @@
         // Replace default image handler with our local selector
         var toolbar = quill.getModule('toolbar');
         toolbar.addHandler('image', selectLocalImage);
+
+        // Adjust Quill images: alternate left/right and set width so two images fit side-by-side
+        function adjustQuillImages() {
+            var container = document.getElementById('quill-editor');
+            if (!container) return;
+            var imgs = container.querySelectorAll('img');
+            imgs.forEach(function(img, idx){
+                img.style.display = 'block';
+                img.style.height = 'auto';
+                img.style.maxWidth = '100%';
+                img.style.width = '48%';
+                img.style.marginTop = '6px';
+                img.style.marginBottom = '6px';
+                if (idx % 2 === 0) {
+                    img.style.float = 'left';
+                    img.style.marginRight = '6px';
+                    img.style.marginLeft = '0';
+                } else {
+                    img.style.float = 'right';
+                    img.style.marginLeft = '6px';
+                    img.style.marginRight = '0';
+                }
+                img.classList.add('quill-auto-aligned');
+            });
+            // ensure a clear at the end so layout below editor is not affected
+            var last = container.querySelector('.quill-auto-clear');
+            if (last) last.parentNode.removeChild(last);
+            var br = document.createElement('div');
+            br.className = 'quill-auto-clear';
+            br.style.clear = 'both';
+            container.appendChild(br);
+        }
     // populate editor if editing
     <?php if ($is_edit && !empty($post['content_delta'])): ?>
         try {
@@ -125,6 +173,8 @@
     <?php elseif ($is_edit && !empty($post['content_html'])): ?>
         document.getElementById('quill-editor').innerHTML = <?= json_encode($post['content_html']); ?>;
     <?php endif; ?>
+    // After editor populated, ensure images are adjusted
+    setTimeout(function(){ adjustQuillImages(); }, 150);
 
     // auto-generate slug from title if empty
     document.getElementById('title').addEventListener('input', function(){
