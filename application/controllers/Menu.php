@@ -4,83 +4,80 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Menu extends CI_Controller {
     public function index()
     {
-        // Hardcoded data for demo
-        $products = [
-            [
-                'name' => 'Classic Vanilla Ice Cream',
-                'img' => base_url('assets/images/placeholder.svg'),
-                'desc' => 'Creamy vanilla ice cream topped with cherry.',
-                'price' => '4.99',
-                'rating' => '4.85',
-                'featured' => false
-            ],
-            [
-                'name' => 'Chocolate Brownie Sundae',
-                'img' => base_url('assets/images/placeholder.svg'),
-                'desc' => 'Rich chocolate ice cream with chunky brownie.',
-                'price' => '5.49',
-                'rating' => '4.95',
-                'featured' => false
-            ],
-            [
-                'name' => 'Strawberry Shortcake',
-                'img' => base_url('assets/images/placeholder.svg'),
-                'desc' => 'Strawberry ice cream layered with shortcake.',
-                'price' => '6.29',
-                'rating' => '4.88',
-                'featured' => false
-            ],
-            [
-                'name' => 'Mint Chocolate Chip Cone',
-                'img' => base_url('assets/images/placeholder.svg'),
-                'desc' => 'Refreshing mint ice cream with chocolate chips.',
-                'price' => '3.99',
-                'rating' => '4.79',
-                'featured' => false
-            ],
-            [
-                'name' => 'Strawberry Sundae',
-                'img' => base_url('assets/images/placeholder.svg'),
-                'desc' => 'Strawberry ice cream with fresh strawberries.',
-                'price' => '5.99',
-                'rating' => '4.75',
-                'featured' => false
-            ],
-            [
-                'name' => 'Chocolate Chip Cookie Cone',
-                'img' => base_url('assets/images/placeholder.svg'),
-                'desc' => 'Chocolate chip cookie dough ice cream in a cone.',
-                'price' => '4.99',
-                'rating' => '4.82',
-                'featured' => false
-            ],
-             
-        ];
-        $categories = [
-            ['name' => 'Cone/Cup (6)', 'active' => true],
-            ['name' => 'Frozen Yogurt (3)', 'active' => false],
-            ['name' => 'Ice Cream Cake (5)', 'active' => false],
-            ['name' => 'Milkshakes (2)', 'active' => false],
-            ['name' => 'Popsicles (4)', 'active' => false],
-            ['name' => 'Sundaes (3)', 'active' => false],
-        ];
-        $featured = [
-            ['name' => 'Rocky Road', 'price' => '6.99'],
-            ['name' => 'Peach Melba', 'price' => '5.99'],
-            ['name' => 'Classic Vanilla', 'price' => '3.99'],
-            ['name' => 'Strawberry Cake', 'price' => '4.99'],
-        ];
+        // Use Product and Category models for dynamic content
+        $this->load->model('Product_model');
+        $this->load->model('Category_model');
+
+        // gather filter params from GET
+        $q = $this->input->get('q', true);
+        $page = (int)$this->input->get('page') ?: 1;
+        // default 6 items per page
+        $per = (int)$this->input->get('per_page') ?: 6;
+        $sort = $this->input->get('sort', true);
+        $min_price = $this->input->get('min_price', true);
+        $max_price = $this->input->get('max_price', true);
+        $cat = $this->input->get('cat'); // expected as array of ids
+        $view = $this->input->get('view', true) ?: 'grid';
+
+        $opts = ['q' => $q, 'page' => $page, 'per_page' => $per, 'sort' => $sort, 'min_price' => $min_price, 'max_price' => $max_price];
+        if (is_array($cat)) $opts['categories'] = array_map('intval', $cat);
+
+        $res = $this->Product_model->query($opts);
+        $products = $res['rows'];
+
+        // format product image urls
+        foreach ($products as &$p) {
+            // normalize field names expected by the existing view
+            if (empty($p['image'])) {
+                $p['image'] = 'assets/images/placeholder.svg';
+            }
+            $p['img'] = base_url($p['image']);
+            // map descriptions: short for cards, long for detail; fall back to legacy 'description'
+            $p['short_desc'] = $p['short_description'] ?? $p['description'] ?? '';
+            $p['long_desc'] = $p['long_description'] ?? $p['description'] ?? '';
+            // ensure name, price, rating exist as strings
+            $p['name'] = $p['name'] ?? '';
+            $p['price'] = isset($p['price']) ? (string)$p['price'] : '';
+            $p['rating'] = isset($p['rating']) ? (string)$p['rating'] : '';
+        }
+
+        $categories = $this->Category_model->all();
+        // mark active categories if filters provided
+        foreach ($categories as &$c) {
+            $c['active'] = (!empty($opts['categories']) && in_array($c['id'], $opts['categories']));
+        }
+
+        // featured products (limit 4)
+        $fopts = ['page' => 1, 'per_page' => 4, 'sort' => 'rating_desc'];
+        $fopts['featured'] = 1;
+        // quick featured fetch
+        $fres = $this->db->order_by('rating','DESC')->get_where('products', ['featured' => 1], 4)->result_array();
+        $featured = array_map(function($r){ return ['name'=>$r['name'],'price'=>$r['price']]; }, $fres);
+
         $this->load->view('templates/header');
         $this->load->view('menu/index', [
             'products' => $products,
             'categories' => $categories,
-            'featured' => $featured
+            'featured' => $featured,
+            'pagination' => ['total' => $res['total'], 'page' => $res['page'], 'per_page' => $res['per_page']],
+            'view_mode' => $view
         ]);
         $this->load->view('templates/footer');
     }
-public function menudetail() {
+public function menudetail($id = null) {
+    $this->load->model('Product_model');
+    $product = null;
+    if (!empty($id) && is_numeric($id)) {
+        $product = $this->Product_model->get((int)$id);
+        if ($product) {
+            if (empty($product['image'])) $product['image'] = 'assets/images/placeholder.svg';
+            $product['img_url'] = base_url($product['image']);
+            if (!isset($product['desc'])) $product['desc'] = $product['description'] ?? '';
+        }
+    }
+
     $this->load->view('templates/header');
-    $this->load->view('menu/menudetail');
+    $this->load->view('menu/menudetail', ['product' => $product]);
     $this->load->view('templates/footer');
 }
 }

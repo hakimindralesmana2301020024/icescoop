@@ -77,7 +77,7 @@
 }
 /* --------- End Menu Detail Page Styles --------- */
 /* --------- Menu Page Styles --------- */
-.menu-page{background:linear-gradient(106.17deg,#EFD7EF 8%,#F5F9FC 40%,#F8EAE1 66%,#EAF8F9 91%);min-height:100vh;padding-bottom:60px;}
+.menu-page{background:linear-gradient(106.17deg,#EFD7EF 8%,#F5F9FC 40%,#F8EAE1 66%,#EAF8F9 91%);min-height:100vh;padding-bottom:60px;padding-top:18px}
 .menu-hero{padding:80px 0 40px;text-align:center;}
 .menu-hero-title{font-family:'Berkshire Swash',cursive;font-size:64px;line-height:1.1;color:#0F0200;margin:0;}
 .menu-breadcrumb{margin-top:18px;}
@@ -97,6 +97,16 @@
 .menu-categories li.active label{color:#F83D8E;font-weight:600;}
 .menu-categories input[type=checkbox]{margin-right:8px;}
 .menu-filter-price .price-range{font-family:'Archivo',sans-serif;font-size:15px;color:#646464;margin-top:8px;}
+.menu-filter-price .price-range label{display:inline-flex;align-items:center;gap:8px}
+.menu-filter-price .price-range input[type="number"]{padding:8px 10px;border:1px solid #eee;border-radius:8px;background:#fff;box-shadow:inset 0 1px 2px rgba(0,0,0,0.03);width:110px;font-size:14px}
+.menu-filter-price .price-range input[type="number"]:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px rgba(248,61,142,0.06)}
+.menu-filter-price .price-range .btn{background:var(--accent);color:#fff;border:none;padding:8px 14px;border-radius:10px;margin-top:0;cursor:pointer;box-shadow:0 8px 28px rgba(248,61,142,0.12);transition:background .15s,transform .08s}
+.menu-filter-price .price-range .btn:hover{background:#e03b82;transform:translateY(-1px)}
+.menu-filter-price .price-range .btn:active{transform:translateY(0)}
+@media(max-width:700px){
+    .menu-filter-price .price-range{display:flex;flex-direction:column;gap:8px}
+    .menu-filter-price .price-range label{display:flex}
+}
 .menu-featured ul{list-style:none;padding:0;margin:0;}
 .menu-featured li{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
 .feat-thumb img{width:36px;height:36px;border-radius:8px;object-fit:cover;box-shadow:0 2px 8px rgba(0,0,0,0.04);}
@@ -127,6 +137,22 @@
 .product-cart{background:#683292;color:#fff;border:none;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;transition:background .2s;}
 .product-cart:hover{background:#F83D8E;}
 
+/* List mode: show product cards as horizontal list items */
+.menu-products.list-mode{display:block;gap:0}
+.menu-products.list-mode .product-card{display:flex;flex-direction:row;align-items:center;padding:14px;gap:18px;border-radius:12px}
+.menu-products.list-mode .product-img img{width:100px;height:100px}
+.menu-products.list-mode .product-info{text-align:left;margin-top:0;flex:1}
+.menu-products.list-mode .product-title{font-size:18px}
+.menu-products.list-mode .product-desc{font-size:14px}
+.menu-products.list-mode .product-bottom{width:auto;margin-left:18px;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.menu-products.list-mode .product-price{font-size:18px}
+.menu-products.list-mode .product-fav{top:12px;right:12px}
+
+@media(max-width:700px){
+    .menu-products.list-mode .product-card{flex-direction:column;align-items:center}
+    .menu-products.list-mode .product-bottom{align-items:center}
+}
+
 .menu-pagination{display:flex;gap:10px;justify-content:center;margin-top:36px;}
 .menu-pagination .page{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:#fff;color:#683292;font-family:'Poppins',sans-serif;font-size:16px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,0.04);transition:background .2s,color .2s;}
 .menu-pagination .page.active,.menu-pagination .page:hover{background:#F83D8E;color:#fff;}
@@ -150,8 +176,8 @@
 }
 *{box-sizing:border-box}
 body{font-family: 'Archivo', Arial, sans-serif;margin:0;color:#212529;background:#fff}
-.container{width:1140px;margin:0 auto;padding:40px 15px}
-.site-header{background:linear-gradient(122.69deg,#EFD7EF 8%,#F5F9FC 39%);padding:0.1px 0}
+.container{max-width:1140px;width:100%;margin:0 auto;padding:20px 16px}
+.site-header{background:linear-gradient(122.69deg,#EFD7EF 8%,#F5F9FC 39%);padding:14px 0}
 .site-header .container{display:flex;align-items:center;justify-content:space-between}
 .logo{font-family:'Berkshire Swash', serif;color:var(--accent);font-size:32px}
 .main-nav a{margin-left:18px;color:#0F0200;text-decoration:none;font-family:'Poppins', Arial, sans-serif;font-weight:500}
