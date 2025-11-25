@@ -29,14 +29,17 @@
         <div class="container blog-list-inner">
             <?php if(isset($posts) && is_array($posts)): ?>
             <div class="posts-grid">
-                <?php foreach($posts as $p): ?>
+                <?php foreach($posts as $k => $p): ?>
                 <article class="post-card">
                     <div class="post-img"><img src="<?php echo $p['img']; ?>" alt="<?php echo $p['title']; ?>"/></div>
                     <div class="post-body">
                         <div class="post-meta">Posted by <strong><?php echo $p['author']; ?></strong> &nbsp; | &nbsp; <?php echo $p['date']; ?></div>
                         <h3 class="post-title"><?php echo $p['title']; ?></h3>
                         <p class="post-excerpt"><?php echo $p['excerpt']; ?></p>
-                        <a href="#" class="read-more">Read More</a>
+                        <?php
+                            $link = isset($p['slug']) && !empty($p['slug']) ? base_url('index.php/blog/'.$p['slug']) : base_url('index.php/blog/'.$k);
+                        ?>
+                        <a href="<?php echo $link; ?>" class="read-more">Read More</a>
                     </div>
                 </article>
                 <?php endforeach; ?>
