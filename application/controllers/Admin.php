@@ -22,9 +22,112 @@ class Admin extends CI_Controller {
      */
     public function index()
     {
-        // For now this page is a hard-coded preview. In future we can add auth checks.
+        // Load weekly trend data and render dashboard
+        $this->load->model('Trend_model');
+        $this->load->model('Icecream_model');
+
+        // Weekly trend
+        $weekly = $this->Trend_model->get_weekly('orders');
+        $weekly_labels = array_column($weekly, 'date');
+        $weekly_values = array_column($weekly, 'value');
+        // fallback: if empty, create last 7 days labels with zeros
+        if (empty($weekly_labels)) {
+            $weekly_labels = [];
+            $weekly_values = [];
+            for ($i = 6; $i >= 0; $i--) {
+                $d = date('Y-m-d', strtotime("-{$i} days"));
+                $weekly_labels[] = $d;
+                $weekly_values[] = 0;
+            }
+        }
+        // human-friendly weekly labels (e.g. '25 Nov')
+        $weekly_labels_display = array_map(function($d){ return date('d M', strtotime($d)); }, $weekly_labels);
+
+        // Monthly trend (last 12 months)
+        $monthly = $this->Trend_model->get_monthly('orders');
+        $monthly_labels = array_column($monthly, 'month');
+        $monthly_values = array_column($monthly, 'value');
+        // fallback: last 12 months labels with zeros
+        if (empty($monthly_labels)) {
+            $monthly_labels = [];
+            $monthly_values = [];
+            for ($i = 11; $i >= 0; $i--) {
+                $m = date('Y-m', strtotime("-{$i} months"));
+                $monthly_labels[] = $m;
+                $monthly_values[] = 0;
+            }
+        }
+        // human-friendly monthly labels (e.g. 'Nov 2025')
+        $monthly_labels_display = array_map(function($m){ return date('M Y', strtotime($m . '-01')); }, $monthly_labels);
+
+        // totals: compute from the arrays so stats match charts
+        $total_week = is_array($weekly_values) ? array_sum($weekly_values) : 0;
+        $total_month = is_array($monthly_values) ? array_sum($monthly_values) : 0;
+        $total_featured = isset($featured_values) && is_array($featured_values) ? array_sum($featured_values) : 0;
+
+        // Prefer showing recent week's total as 'Total Orders' if available, else fall back to stored total
+        $db_total = $this->Trend_model->get_total('orders');
+        $total_orders = $total_week > 0 ? $total_week : ($db_total ?: 0);
+
+        // Daily revenue: read last 7 days for metric 'revenue' and take today's value
+        $weekly_revenue = $this->Trend_model->get_weekly('revenue');
+        $daily_revenue_value = 0;
+        if (is_array($weekly_revenue) && count($weekly_revenue)) {
+            // find today's date entry
+            $today = date('Y-m-d');
+            foreach ($weekly_revenue as $r) {
+                if (isset($r['date']) && $r['date'] === $today) {
+                    $daily_revenue_value = (int)$r['value'];
+                    break;
+                }
+            }
+            // if not found, maybe last element is the latest
+            if ($daily_revenue_value === 0) {
+                $last = end($weekly_revenue);
+                if (isset($last['value'])) $daily_revenue_value = (int)$last['value'];
+            }
+        }
+        $revenue = $daily_revenue_value > 0 ? ('Rp ' . number_format($daily_revenue_value, 0, ',', '.')) : '-';
+
+        // other stats placeholders - replace with real queries if available
+        $active_users = '-';
+        $pending_orders = '-';
+
+        // featured ice cream products (uses Icecream_model which currently returns featured list)
+        $featured_products = $this->Icecream_model->get_featured();
+        // featured data for pie chart (title + sales value)
+        $featured_for_pie = $this->Icecream_model->get_featured_with_sales(6);
+        $featured_labels = array_column($featured_for_pie, 'title');
+        $featured_values = array_column($featured_for_pie, 'value');
+        if (empty($featured_labels)) {
+            $featured_labels = ['No data'];
+            $featured_values = [0];
+        }
+
+        $data = [
+            'weekly_labels' => $weekly_labels,
+            'weekly_values' => $weekly_values,
+            'weekly_labels_display' => $weekly_labels_display,
+            'monthly_labels' => $monthly_labels,
+            'monthly_values' => $monthly_values,
+            'monthly_labels_display' => $monthly_labels_display,
+            'total_orders' => $total_orders,
+            'weekly_total' => $total_week,
+            'monthly_total' => $total_month,
+            'featured_total' => $total_featured,
+            'revenue' => $revenue,
+            'active_users' => $active_users,
+            'pending_orders' => $pending_orders,
+            'featured_products' => $featured_products,
+            'featured_labels' => $featured_labels,
+            'featured_values' => $featured_values
+        ];
+
+        // expose raw weekly_revenue for debug (temporary)
+        $data['weekly_revenue_raw'] = isset($weekly_revenue) ? $weekly_revenue : [];
+
         $this->load->view('templates/admin_header');
-        $this->load->view('admin/dashboard');
+        $this->load->view('admin/dashboard', $data);
         $this->load->view('templates/admin_footer');
     }
 
