@@ -622,4 +622,104 @@ class Admin extends CI_Controller {
         $this->load->view('admin/blog/index', $data);
         $this->load->view('templates/admin_footer');
     }
+
+    /**
+     * Admin: list and manage menu products
+     */
+    public function menu()
+    {
+        $this->load->model('Product_model');
+        $this->load->model('Category_model');
+
+        // list products for admin
+        $products = $this->db->order_by('created_at','DESC')->get('products')->result_array();
+        foreach ($products as &$p) {
+            $p['img_url'] = !empty($p['image']) ? base_url($p['image']) : base_url('assets/images/placeholder.svg');
+        }
+
+        $data = ['products' => $products, 'categories' => $this->Category_model->all()];
+        $this->load->view('templates/admin_header');
+        $this->load->view('admin/menu_list', $data);
+        $this->load->view('templates/admin_footer');
+    }
+
+    public function menu_edit($id = null)
+    {
+        $this->load->model('Product_model');
+        $this->load->model('Category_model');
+
+        $img_dir = FCPATH . 'assets/images/products/';
+        if (!is_dir($img_dir)) @mkdir($img_dir, 0755, true);
+
+        if ($this->input->method() === 'post') {
+            $payload = [];
+            $payload['id'] = $this->input->post('id');
+            $payload['name'] = $this->input->post('name', true);
+            $payload['description'] = $this->input->post('description', true);
+            // new separate fields for card and detail descriptions
+            $payload['short_description'] = $this->input->post('short_description', true);
+            $payload['long_description'] = $this->input->post('long_description', true);
+            $payload['price'] = $this->input->post('price', true);
+            $payload['rating'] = $this->input->post('rating', true);
+            $payload['featured'] = $this->input->post('featured') ? 1 : 0;
+
+            // handle image upload
+            if (!empty($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+                $tmp = $_FILES['image']['tmp_name'];
+                $name = 'prod_' . time() . '_' . basename($_FILES['image']['name']);
+                $dest = $img_dir . $name;
+                if (@move_uploaded_file($tmp, $dest)) {
+                    $payload['image'] = 'assets/images/products/' . $name;
+                }
+            } else {
+                // preserve existing image if editing
+                $existing = !empty($payload['id']) ? $this->Product_model->get($payload['id']) : [];
+                if (!empty($existing) && empty($payload['image'])) $payload['image'] = $existing['image'] ?? null;
+            }
+
+            $saved = $this->Product_model->save($payload);
+            // Determine the product id (save returns id for insert/update)
+            $prod_id = !empty($payload['id']) ? (int)$payload['id'] : (int)$saved;
+
+            // update category links: remove old, insert new
+            $cats = $this->input->post('categories');
+            $this->db->where('product_id', $prod_id)->delete('product_category');
+            if (is_array($cats)) {
+                foreach ($cats as $cid) {
+                    $this->db->insert('product_category', ['product_id' => $prod_id, 'category_id' => (int)$cid]);
+                }
+            }
+
+            $this->session->set_flashdata('admin_msg', 'Product saved.');
+            redirect(base_url('index.php/admin/menu'));
+            return;
+        }
+
+        $product = [];
+        $selected = [];
+        if (!empty($id)) {
+            $product = $this->Product_model->get($id);
+            $pc = $this->db->get_where('product_category', ['product_id' => (int)$id])->result_array();
+            foreach ($pc as $r) $selected[] = $r['category_id'];
+        }
+
+        $data = ['product' => $product, 'categories' => $this->Category_model->all(), 'selected' => $selected];
+        $this->load->view('templates/admin_header');
+        $this->load->view('admin/menu_form', $data);
+        $this->load->view('templates/admin_footer');
+    }
+
+    public function menu_delete($id)
+    {
+        $this->load->model('Product_model');
+        $prod = $this->Product_model->get($id);
+        if ($prod && !empty($prod['image'])) {
+            $prev = FCPATH . ltrim($prod['image'], '/');
+            if (is_file($prev)) @unlink($prev);
+        }
+        $this->db->delete('product_category', ['product_id' => (int)$id]);
+        $this->Product_model->delete($id);
+        $this->session->set_flashdata('admin_msg', 'Product deleted.');
+        redirect(base_url('index.php/admin/menu'));
+    }
 }

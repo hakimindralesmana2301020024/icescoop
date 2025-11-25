@@ -15,13 +15,18 @@
         <div class="container menudetail-main-inner">
             <div class="menudetail-gallery">
                 <div class="gallery-thumbs">
-                    <img src="<?php echo base_url('assets/images/placeholder.svg'); ?>" alt="thumb1" class="thumb active" />
-                    <img src="<?php echo base_url('assets/images/placeholder.svg'); ?>" alt="thumb2" class="thumb" />
-                    <img src="<?php echo base_url('assets/images/placeholder.svg'); ?>" alt="thumb3" class="thumb" />
-                    <img src="<?php echo base_url('assets/images/placeholder.svg'); ?>" alt="thumb4" class="thumb" />
+                    <?php if(!empty($product) && !empty($product['img_url'])): ?>
+                        <img src="<?= $product['img_url']; ?>" alt="thumb1" class="thumb active" />
+                    <?php else: ?>
+                        <img src="<?php echo base_url('assets/images/placeholder.svg'); ?>" alt="thumb1" class="thumb active" />
+                    <?php endif; ?>
                 </div>
                 <div class="gallery-main">
-                    <img src="<?php echo base_url('assets/images/placeholder.svg'); ?>" alt="Classic Vanilla Ice Cream" />
+                    <?php if(!empty($product) && !empty($product['img_url'])): ?>
+                        <img src="<?= $product['img_url']; ?>" alt="<?= htmlspecialchars($product['name'] ?? 'Product'); ?>" />
+                    <?php else: ?>
+                        <img src="<?php echo base_url('assets/images/placeholder.svg'); ?>" alt="Product" />
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="menudetail-info">
@@ -31,28 +36,12 @@
                     <span class="star"><i class="bi bi-star-fill"></i></span>
                     <span class="star"><i class="bi bi-star-fill"></i></span>
                     <span class="star"><i class="bi bi-star-half"></i></span>
-                    <span class="rating-score">4.85</span>
+                    <span class="rating-score"><?= htmlspecialchars($product['rating'] ?? ''); ?></span>
                 </div>
-                <div class="menudetail-title">Classic Vanilla Ice Cream</div>
-                <div class="menudetail-price accent">$5.99</div>
-                <div class="menudetail-desc">Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magna.</div>
-                <div class="menudetail-color">
-                    <div class="label">Color:</div>
-                    <div class="color-options">
-                        <span class="color-dot" style="background:#b97a56"></span>
-                        <span class="color-dot" style="background:#f8e1c1"></span>
-                        <span class="color-dot" style="background:#fff"></span>
-                        <span class="color-dot" style="background:#e3c7b7"></span>
-                    </div>
-                </div>
-                <div class="menudetail-size">
-                    <div class="label">Size:</div>
-                    <div class="size-options">
-                        <span class="size-btn">L</span>
-                        <span class="size-btn active">M</span>
-                        <span class="size-btn">S</span>
-                    </div>
-                </div>
+                <div class="menudetail-title"><?= htmlspecialchars($product['name'] ?? 'Product'); ?></div>
+                <div class="menudetail-price accent">Rp <?= htmlspecialchars($product['price'] ?? ''); ?></div>
+                <div class="menudetail-desc"><?= nl2br(htmlspecialchars($product['desc'] ?? $product['description'] ?? '')); ?></div>
+
                 <div class="menudetail-buy">
                     <div class="qty-group">
                         <button class="qty-btn">-</button>
@@ -61,10 +50,7 @@
                     </div>
                     <button class="btn primary add-to-cart">Add to Cart</button>
                 </div>
-                <div class="menudetail-actions">
-                    <label><input type="checkbox" checked disabled> Add to wishlist</label>
-                    <label><input type="checkbox" disabled> Compare</label>
-                </div>
+                
             </div>
         </div>
     </section>
@@ -77,7 +63,11 @@
                 <div class="tab">Reviews</div>
             </div>
             <div class="tab-content">
-                <p>Quia voluptatem sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.</p>
+                <?php if (!empty($product) && !empty($product['long_description'])): ?>
+                    <?= nl2br(htmlspecialchars($product['long_description'])); ?>
+                <?php else: ?>
+                    <p>Deskripsi detail belum tersedia untuk produk ini.</p>
+                <?php endif; ?>
             </div>
         </div>
     </section>
