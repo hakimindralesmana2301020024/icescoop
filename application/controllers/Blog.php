@@ -11,7 +11,21 @@ class Blog extends CI_Controller {
             $db_posts = $this->Blog_model->get_all();
             if (!empty($db_posts)) {
                 foreach ($db_posts as $bp) {
+                    // if slug missing, generate and persist a unique slug so links work without manual steps
+                    if (empty($bp['slug']) && isset($bp['id'])) {
+                        try {
+                            $this->load->model('Blog_model');
+                            $new_slug = $this->Blog_model->create_unique_slug(isset($bp['title']) ? $bp['title'] : 'post', $bp['id']);
+                            $this->Blog_model->update($bp['id'], ['slug' => $new_slug]);
+                            $bp['slug'] = $new_slug;
+                        } catch (Exception $e) {
+                            // ignore and continue without slug
+                        }
+                    }
+
                     $data_posts[] = [
+                        'id' => isset($bp['id']) ? $bp['id'] : null,
+                        'slug' => isset($bp['slug']) ? $bp['slug'] : null,
                         'title' => $bp['title'],
                         'img' => !empty($bp['featured_image']) ? base_url('assets/images/' . $bp['featured_image']) : base_url('assets/images/placeholder.svg'),
                         'author' => 'Admin',
@@ -80,25 +94,35 @@ class Blog extends CI_Controller {
 
     public function details($id = 0)
     {
-        // First try to load single post from DB by id (if numeric)
+        // First try to load single post from DB by id or slug
         $post_data = null;
-        if (is_numeric($id)) {
-            try {
-                $this->load->model('Blog_model');
-                $db_post = $this->Blog_model->get((int)$id);
-                if (!empty($db_post)) {
-                    $post_data = [
-                        'title' => $db_post['title'],
-                        'img' => !empty($db_post['featured_image']) ? base_url('assets/images/' . $db_post['featured_image']) : base_url('assets/images/placeholder.svg'),
-                        'author' => 'Admin',
-                        'date' => !empty($db_post['created_at']) ? date('F j, Y', strtotime($db_post['created_at'])) : '',
-                        'excerpt' => $db_post['excerpt'] ?: '',
-                        'content' => $db_post['content_html'] ?: ''
-                    ];
+        try {
+            $this->load->model('Blog_model');
+            $db_post = $this->Blog_model->get($id);
+            if (!empty($db_post)) {
+                // if slug missing in DB, generate and persist one so future links use slug
+                if (empty($db_post['slug']) && isset($db_post['id'])) {
+                    try {
+                        $this->load->model('Blog_model');
+                        $new_slug = $this->Blog_model->create_unique_slug(isset($db_post['title']) ? $db_post['title'] : 'post', $db_post['id']);
+                        $this->Blog_model->update($db_post['id'], ['slug' => $new_slug]);
+                        $db_post['slug'] = $new_slug;
+                    } catch (Exception $e) {
+                        // ignore
+                    }
                 }
-            } catch (Exception $e) {
-                $post_data = null;
+
+                $post_data = [
+                    'title' => $db_post['title'],
+                    'img' => !empty($db_post['featured_image']) ? base_url('assets/images/' . $db_post['featured_image']) : base_url('assets/images/placeholder.svg'),
+                    'author' => 'Admin',
+                    'date' => !empty($db_post['created_at']) ? date('F j, Y', strtotime($db_post['created_at'])) : '',
+                    'excerpt' => $db_post['excerpt'] ?: '',
+                    'content' => $db_post['content_html'] ?: ''
+                ];
             }
+        } catch (Exception $e) {
+            $post_data = null;
         }
 
         // fallback to hard-coded posts if DB not available or post not found
@@ -154,13 +178,14 @@ class Blog extends CI_Controller {
                 ],
             ];
 
-            if (!isset($posts[$id])) {
+            // fallback only supports numeric index for hard-coded posts
+            if (!is_numeric($id) || !isset($posts[(int)$id])) {
                 show_404();
                 return;
             }
 
             $data = [
-                'post' => $posts[$id],
+                'post' => $posts[(int)$id],
                 'popular' => array_slice($posts, 0, 3)
             ];
         } else {
