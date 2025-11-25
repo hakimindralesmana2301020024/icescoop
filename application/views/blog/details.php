@@ -50,7 +50,12 @@
     .post-meta{font-size:12px;color:#888;margin-bottom:8px}
     .post-title{font-size:34px;margin:6px 0 20px;font-weight:700}
     .hero-image img{width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(15,15,15,0.08)}
-    .post-content{margin-top:26px;color:#444;line-height:1.8}
+    .post-content{margin-top:26px;color:#444;line-height:1.8; overflow:auto; box-sizing:border-box; padding-bottom:12px; text-align:justify; text-justify:inter-word}
+    .post-content p{ text-align:justify }
+    .post-content::after{content:"";display:table;clear:both}
+    /* quill inserted alternating images (editor adds class quill-auto-aligned) */
+    .post-content img.quill-auto-aligned{max-width:48%;height:auto;margin:6px 6px 12px 0}
+    .post-content img.quill-auto-aligned[style*="float:right"]{margin-left:6px;margin-right:0}
     .post-quote{border-left:4px solid #7b4cff;padding:12px 16px;margin:20px 0;background:#fbf9ff;color:#6b6b6b;font-style:italic}
     .post-quote cite{display:block;margin-top:8px;font-style:normal;color:#7b4cff}
     .secondary-image{margin:24px 0}
