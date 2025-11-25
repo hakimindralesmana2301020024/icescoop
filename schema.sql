@@ -65,3 +65,11 @@ CREATE TABLE IF NOT EXISTS `home` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- If you have a `blogs` table, add a `slug` column and unique index for friendly URLs
+-- Run this in MySQL (adjust length or position as needed):
+-- ALTER TABLE `blogs` ADD COLUMN `slug` VARCHAR(255) NULL AFTER `title`;
+-- ALTER TABLE `blogs` ADD UNIQUE KEY `ux_blogs_slug` (`slug`);
+-- If you want to make slug NOT NULL once all rows populated, run:
+-- UPDATE `blogs` SET `slug` = LOWER(REPLACE(title, ' ', '-')) WHERE `slug` IS NULL;
+-- Then alter to NOT NULL: ALTER TABLE `blogs` MODIFY `slug` VARCHAR(255) NOT NULL;
