@@ -78,3 +78,13 @@ body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--admin-bg);
     .admin-sidebar{display:none;position:static;height:auto}
     .admin-main{margin-left:0}
 }
+
+/* Chart container helper: make canvas fill wrapper height/width */
+.chart-container{position:relative}
+.chart-container canvas{width:100% !important;height:100% !important;display:block}
+
+/* Force charts to be side-by-side even on small screens (two equal columns) */
+.charts-row{display:flex;gap:18px;flex-wrap:nowrap}
+.charts-row .chart-col{flex:1 1 50%;max-width:50%}
+.charts-row .chart-col .card{height:100%}
+.chart-card .card-body{padding:0}
