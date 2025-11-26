@@ -31,7 +31,7 @@
                         <div class="ice-rating" aria-label="rating"><span class="star">★</span> <span><?php echo htmlspecialchars($item['rating'] ?? ''); ?>/5</span></div>
                     </div>
                     <div class="ice-desc"><?php echo htmlspecialchars($item['desc'] ?? ''); ?></div>
-                    <div class="ice-price">Rp <?php echo htmlspecialchars($item['price'] ?? ''); ?></div>
+                    <div class="ice-price"><?= format_rp($item['price'] ?? 0); ?></div>
                 </div>
                 <button class="ice-cart" title="Add to cart" aria-label="Add to cart">
                     <!-- cart SVG -->
@@ -42,10 +42,11 @@
     </div>
 </section>
 
-<section class="relive">
+    <section class="relive">
     <div class="container relive-inner">
         <div class="relive-left">
-            <img src="<?php echo base_url('assets/images/placeholder.svg'); ?>" alt="relive-image" />
+            <?php $rel = isset($home['relive']) ? $home['relive'] : []; $relimg = isset($rel['image']) && $rel['image'] ? $rel['image'] : 'assets/images/placeholder.svg'; ?>
+            <img src="<?php echo base_url($relimg); ?>" alt="relive-image" />
         </div>
         <div class="relive-right">
             <h2 class="relive-title">Relive the Sweet Memories of Classic <span class="accent">Ice Creams</span></h2>
@@ -79,9 +80,9 @@
                 <?php $bimg = isset($b['image']) && $b['image'] ? $b['image'] : 'assets/images/placeholder.svg'; ?>
                 <img src="<?php echo base_url($bimg); ?>" alt="<?php echo htmlspecialchars($b['title'] ?? ''); ?>">
                 <h3><?php echo htmlspecialchars($b['title'] ?? ''); ?></h3>
-                <div class="meta">
-                    <span class="price"><?php echo htmlspecialchars($b['price'] ?? ''); ?></span>
-                </div>
+                    <div class="meta">
+                        <span class="price"><?= format_rp($b['price'] ?? 0); ?></span>
+                    </div>
             </div>
         <?php endforeach; ?>
     </div>
@@ -97,7 +98,6 @@
             <a class="btn primary special-cta" href="#">Get This Deal</a>
         </div>
         <div class="special-right">
-            <div class="special-badge">50%<span>OFF</span></div>
             <?php $specimg = isset($spec['image']) && $spec['image'] ? $spec['image'] : 'assets/images/placeholder.svg'; ?>
             <img class="special-image" src="<?php echo base_url($specimg); ?>" alt="special-bowl" />
         </div>

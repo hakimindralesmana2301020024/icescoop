@@ -11,6 +11,18 @@
         </div>
     </section>
 
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    var dec = document.getElementById('qty-dec');
+    var inc = document.getElementById('qty-inc');
+    var input = document.getElementById('qty-input');
+    if(!input) return;
+    function clamp(v){ v = parseInt(v) || 0; if(v<1) v = 1; return v; }
+    if(dec) dec.addEventListener('click', function(){ input.value = clamp(parseInt(input.value)-1); });
+    if(inc) inc.addEventListener('click', function(){ input.value = clamp(parseInt(input.value)+1); });
+});
+</script>
+
     <section class="menudetail-main">
         <div class="container menudetail-main-inner">
             <div class="menudetail-gallery">
@@ -39,16 +51,20 @@
                     <span class="rating-score"><?= htmlspecialchars($product['rating'] ?? ''); ?></span>
                 </div>
                 <div class="menudetail-title"><?= htmlspecialchars($product['name'] ?? 'Product'); ?></div>
-                <div class="menudetail-price accent">Rp <?= htmlspecialchars($product['price'] ?? ''); ?></div>
+                <div class="menudetail-price accent"><?= format_rp($product['price'] ?? 0); ?></div>
                 <div class="menudetail-desc"><?= nl2br(htmlspecialchars($product['desc'] ?? $product['description'] ?? '')); ?></div>
 
                 <div class="menudetail-buy">
-                    <div class="qty-group">
-                        <button class="qty-btn">-</button>
-                        <input type="text" value="1" class="qty-input" />
-                        <button class="qty-btn">+</button>
-                    </div>
-                    <button class="btn primary add-to-cart">Add to Cart</button>
+                    <form id="add-to-cart-form" method="post" action="<?= base_url('index.php/order/add'); ?>">
+                        <input type="hidden" name="mode" value="set" />
+                        <input type="hidden" name="product_id" value="<?= htmlspecialchars($product['id'] ?? '') ?>" />
+                        <div class="qty-group">
+                            <button type="button" class="qty-btn" id="qty-dec">-</button>
+                            <input type="text" name="qty" id="qty-input" value="1" class="qty-input" />
+                            <button type="button" class="qty-btn" id="qty-inc">+</button>
+                        </div>
+                        <button type="submit" class="btn primary add-to-cart">Add to Cart</button>
+                    </form>
                 </div>
                 
             </div>

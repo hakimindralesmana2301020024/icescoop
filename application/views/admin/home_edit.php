@@ -113,6 +113,20 @@
                     <button type="button" class="btn btn-outline-secondary" id="btn-replace-special">Pilih & Ganti</button>
                 </div>
             </div>
+                <hr />
+                <h3>Relive Section</h3>
+                <div class="mb-2">
+                    <label class="form-label">Relive Image</label>
+                    <div class="mb-2">
+                        <?php $rel = isset($h['relive']) ? $h['relive'] : []; ?>
+                        <?php $relimg = isset($rel['image']) && $rel['image'] ? $rel['image'] : 'assets/images/placeholder.svg'; ?>
+                        <img id="preview-relive" src="<?php echo base_url($relimg); ?>" alt="relive-image" />
+                    </div>
+                    <div class="mb-2 input-group">
+                        <input type="file" id="relive_image" name="relive_image" accept="image/*" class="form-control" />
+                        <button type="button" class="btn btn-outline-secondary" id="btn-replace-relive">Pilih & Ganti</button>
+                    </div>
+                </div>
 
             <hr />
             <h3>Testimonials</h3>
@@ -157,5 +171,6 @@ document.addEventListener('DOMContentLoaded', function(){
     bindReplace('.btn-replace-cat', 'preview-cat-');
     bindReplace('.btn-replace-bs', 'preview-bs-');
     var btnSpec = document.getElementById('btn-replace-special'); var inpSpec = document.getElementById('special_image'); if (btnSpec && inpSpec){ btnSpec.addEventListener('click', function(){ inpSpec.click(); }); inpSpec.addEventListener('change', function(e){ var f = e.target.files && e.target.files[0]; if (!f) return; var url = URL.createObjectURL(f); var img = document.getElementById('preview-special'); if (img) img.src = url; }); }
+        var btnRel = document.getElementById('btn-replace-relive'); var inpRel = document.getElementById('relive_image'); if (btnRel && inpRel){ btnRel.addEventListener('click', function(){ inpRel.click(); }); inpRel.addEventListener('change', function(e){ var f = e.target.files && e.target.files[0]; if (!f) return; var url = URL.createObjectURL(f); var img = document.getElementById('preview-relive'); if (img) img.src = url; }); }
 });
 </script>

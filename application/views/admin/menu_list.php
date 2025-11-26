@@ -18,7 +18,7 @@
                     <td><?php echo $p['id']; ?></td>
                     <td style="width:80px"><img src="<?php echo $p['img_url']; ?>" style="max-width:64px;height:auto" /></td>
                     <td><?php echo htmlspecialchars($p['name']); ?></td>
-                    <td>Rp <?php echo htmlspecialchars($p['price']); ?></td>
+                    <td><?= format_rp($p['price'] ?? 0); ?></td>
                     <td><?php echo $p['featured'] ? 'Yes' : 'No'; ?></td>
                     <td>
                         <a href="<?= base_url('index.php/admin/menu_edit/'.$p['id']); ?>">Edit</a> |

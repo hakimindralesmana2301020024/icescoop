@@ -44,7 +44,7 @@
                 <li>
                     <span class="feat-thumb"><img src="<?= base_url('assets/images/placeholder.svg'); ?>" alt="<?= htmlspecialchars($f['name']); ?>" /></span>
                     <span class="feat-name"><?= htmlspecialchars($f['name']); ?></span>
-                    <span class="feat-price accent">Rp <?= htmlspecialchars($f['price']); ?></span>
+                    <span class="feat-price accent"><?= format_rp($f['price'] ?? 0); ?></span>
                 </li>
                 <?php endforeach; ?>
             </ul>
@@ -91,7 +91,7 @@
                     <div class="product-desc"><?= htmlspecialchars($p['short_desc']); ?></div>
                 </div>
                     <div class="product-bottom">
-                    <div class="product-price accent">Rp <?= htmlspecialchars($p['price']); ?></div>
+                    <div class="product-price accent"><?= format_rp($p['price'] ?? 0); ?></div>
                     <a href="<?= base_url('index.php/menu/menudetail/' . (int)$p['id']); ?>" class="product-cart" title="View details"><i class="bi bi-cart"></i></a>
                 </div>
             </div>

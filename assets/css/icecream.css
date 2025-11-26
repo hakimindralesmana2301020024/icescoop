@@ -265,7 +265,7 @@ body{font-family: 'Archivo', Arial, sans-serif;margin:0;color:#212529;background
 .relive{padding:80px 0;background:transparent}
 .relive-inner{display:flex;align-items:center;gap:40px}
 .relive-left{flex:1;position:relative;display:flex;align-items:center;justify-content:center}
-.relive-left img{width:520px;height:auto;border-radius:50%;position:relative;z-index:2;box-shadow:0 30px 60px rgba(0,0,0,0.12)}
+.relive-left img{width:520px;height:auto;border-radius:0;position:relative;z-index:2;box-shadow:none;background:transparent}
 .relive-right{flex:1;padding:20px}
 .relive-title{font-family:'Berkshire Swash';font-size:60px;margin:0 0 18px;color:#0F0200}
 .relive-lead{font-size:18px;color:var(--muted);margin-bottom:28px;max-width:520px}
@@ -287,14 +287,13 @@ body{font-family: 'Archivo', Arial, sans-serif;margin:0;color:#212529;background
 .special-lead{font-size:16px;color:#fff;opacity:0.9;margin-bottom:18px}
 .special-cta{background:#ff6ea0;padding:14px 30px;border-radius:40px;display:inline-block}
 .special-right{flex:1;position:relative;display:flex;align-items:center;justify-content:center}
-.special-image{width:520px;max-width:100%;height:auto;display:block;position:relative;z-index:2}
-.special-badge{position:absolute;left:20%;top:20%;width:138px;height:138px;border-radius:50%;background:linear-gradient(180deg,#FBAB2A 0%,#FFC972 100%);border:4px solid #F69C0C;display:flex;align-items:center;justify-content:center;font-family:'Oswald',sans-serif;font-size:44px;color:#fff;z-index:3}
-.special-badge span{display:block;font-size:20px}
+.special-image{width:520px;max-width:100%;height:auto;display:block;position:relative;z-index:2;border-radius:0;box-shadow:none;background:transparent}
+.special-badge{display:none}
+.special-badge span{display:none}
 
 @media(max-width:1000px){
     .special-inner{flex-direction:column}
     .special-title{font-size:60px;text-align:center}
-    .special-badge{left:50%;top:10%;transform:translateX(-50%)}
     .special-image{width:360px}
 }
 

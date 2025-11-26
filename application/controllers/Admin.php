@@ -394,6 +394,26 @@ class Admin extends CI_Controller {
                 if (!empty($existing['special']['image'])) $special['image'] = $existing['special']['image'];
             }
 
+            // Relive section image (the "Relive the Sweet Memories" left image)
+            $relive = [];
+            if (!empty($_FILES['relive_image']) && $_FILES['relive_image']['error'] === UPLOAD_ERR_OK) {
+                $tmp = $_FILES['relive_image']['tmp_name'];
+                $name = 'relive_' . time() . '_' . basename($_FILES['relive_image']['name']);
+                $dest = $img_dir . $name;
+                if (@move_uploaded_file($tmp, $dest)) {
+                    if (!empty($existing['relive']['image'])) {
+                        $prev = FCPATH . ltrim($existing['relive']['image'], '/');
+                        $home_base = realpath(FCPATH . 'assets/images/home/');
+                        if ($home_base && strpos(realpath($prev), $home_base) === 0 && is_file($prev)) @unlink($prev);
+                    }
+                    $relive['image'] = 'assets/images/home/' . $name;
+                }
+            } else {
+                if (!empty($existing['relive']['image'])) $relive['image'] = $existing['relive']['image'];
+            }
+
+            $payload['relive'] = $relive;
+
             // testimonials have no images by default, preserve existing if any
             $existing_tests = isset($existing['testimonials']) ? $existing['testimonials'] : [];
             for ($i=0;$i<count($testimonials);$i++) {

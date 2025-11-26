@@ -65,10 +65,13 @@
                     <div class="summary-head">Items <span class="summary-price">Price</span></div>
                     <div class="summary-list">
                         <?php if(isset($cart) && is_array($cart)): foreach($cart as $c): ?>
-                        <div class="summary-item"><div class="s-left"><span class="qty"><?php echo $c['qty']; ?>x</span> <span class="s-name"><?php echo $c['name']; ?></span></div><div class="s-right">$<?php echo $c['total']; ?></div></div>
+                        <div class="summary-item">
+                            <div class="s-left"><span class="qty"><?php echo (int)($c['qty'] ?? 0); ?>x</span> <span class="s-name"><?php echo htmlspecialchars($c['name'] ?? ''); ?></span></div>
+                            <div class="s-right"><?= format_rp($c['total'] ?? 0); ?></div>
+                        </div>
                         <?php endforeach; endif; ?>
                     </div>
-                    <div class="summary-total"><span>Grand Total</span><span class="accent">$<?php echo isset($summary['total']) ? $summary['total'] : '0.00'; ?></span></div>
+                    <div class="summary-total"><span>Grand Total</span><span class="accent"><?= format_rp($summary['total'] ?? 0); ?></span></div>
                 </div>
             </aside>
         </div>

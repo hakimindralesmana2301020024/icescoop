@@ -28,12 +28,18 @@ class Home_model extends CI_Model {
             `categories` longtext DEFAULT NULL,
             `best_sellers` longtext DEFAULT NULL,
             `special` longtext DEFAULT NULL,
+            `relive` longtext DEFAULT NULL,
             `testimonials` longtext DEFAULT NULL,
             `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
             `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (`id`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
         $this->db->query($sql);
+        // Ensure new columns exist for older installs
+        if (!$this->db->field_exists('relive', $table)) {
+            $alter = "ALTER TABLE `" . $table . "` ADD COLUMN `relive` longtext DEFAULT NULL";
+            $this->db->query($alter);
+        }
     }
 
     public function get()
@@ -75,7 +81,11 @@ class Home_model extends CI_Model {
         $data['featured_items'] = json_decode($row['featured_items'], true) ?: [];
         $data['categories'] = json_decode($row['categories'], true) ?: [];
         $data['best_sellers'] = json_decode($row['best_sellers'], true) ?: [];
-        $data['special'] = json_decode($row['special'], true) ?: [];
+        $data['special'] = json_decode(isset($row['special']) ? $row['special'] : null, true) ?: [];
+        $data['relive'] = [];
+        if (isset($row['relive'])) {
+            $data['relive'] = json_decode($row['relive'], true) ?: [];
+        }
         $data['testimonials'] = json_decode($row['testimonials'], true) ?: [];
         $data['_id'] = $row['id'];
         return $data;
@@ -94,6 +104,7 @@ class Home_model extends CI_Model {
             'categories' => isset($data['categories']) ? json_encode($data['categories'], JSON_UNESCAPED_UNICODE) : null,
             'best_sellers' => isset($data['best_sellers']) ? json_encode($data['best_sellers'], JSON_UNESCAPED_UNICODE) : null,
             'special' => isset($data['special']) ? json_encode($data['special'], JSON_UNESCAPED_UNICODE) : null,
+            'relive' => isset($data['relive']) ? json_encode($data['relive'], JSON_UNESCAPED_UNICODE) : null,
             'testimonials' => isset($data['testimonials']) ? json_encode($data['testimonials'], JSON_UNESCAPED_UNICODE) : null,
             'updated_at' => $now
         ];
