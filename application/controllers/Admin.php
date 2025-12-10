@@ -591,8 +591,6 @@ class Admin extends CI_Controller {
                 if (!empty($existing['special']['image'])) $special['image'] = $existing['special']['image'];
             }
 
-<<<<<<< HEAD
-=======
             // QRIS image (Icescoop QR) - admin can upload store QR here
             $qris = [];
             if (!empty($_FILES['qris_image']) && $_FILES['qris_image']['error'] === UPLOAD_ERR_OK) {
@@ -633,7 +631,6 @@ class Admin extends CI_Controller {
 
             $payload['relive'] = $relive;
 
->>>>>>> 39c0e72 (update)
             // testimonials have no images by default, preserve existing if any
             $existing_tests = isset($existing['testimonials']) ? $existing['testimonials'] : [];
             for ($i=0;$i<count($testimonials);$i++) {
