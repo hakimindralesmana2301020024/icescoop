@@ -1,5 +1,5 @@
             </section>
-            <footer class="admin-footer">© <?= date('Y'); ?> IcyTales — Admin preview</footer>
+            <footer class="admin-footer">© <?= date('Y'); ?> Swett Scoop — Admin preview</footer>
         </div>
     </div>
     <!-- Bootstrap JS bundle (includes Popper) -->

@@ -40,6 +40,10 @@ class Home_model extends CI_Model {
             $alter = "ALTER TABLE `" . $table . "` ADD COLUMN `relive` longtext DEFAULT NULL";
             $this->db->query($alter);
         }
+        if (!$this->db->field_exists('qris', $table)) {
+            $alter2 = "ALTER TABLE `" . $table . "` ADD COLUMN `qris` longtext DEFAULT NULL";
+            $this->db->query($alter2);
+        }
     }
 
     public function get()
@@ -86,6 +90,10 @@ class Home_model extends CI_Model {
         if (isset($row['relive'])) {
             $data['relive'] = json_decode($row['relive'], true) ?: [];
         }
+        $data['qris'] = [];
+        if (isset($row['qris'])) {
+            $data['qris'] = json_decode($row['qris'], true) ?: [];
+        }
         $data['testimonials'] = json_decode($row['testimonials'], true) ?: [];
         $data['_id'] = $row['id'];
         return $data;
@@ -105,6 +113,7 @@ class Home_model extends CI_Model {
             'best_sellers' => isset($data['best_sellers']) ? json_encode($data['best_sellers'], JSON_UNESCAPED_UNICODE) : null,
             'special' => isset($data['special']) ? json_encode($data['special'], JSON_UNESCAPED_UNICODE) : null,
             'relive' => isset($data['relive']) ? json_encode($data['relive'], JSON_UNESCAPED_UNICODE) : null,
+            'qris' => isset($data['qris']) ? json_encode($data['qris'], JSON_UNESCAPED_UNICODE) : null,
             'testimonials' => isset($data['testimonials']) ? json_encode($data['testimonials'], JSON_UNESCAPED_UNICODE) : null,
             'updated_at' => $now
         ];

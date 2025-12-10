@@ -33,28 +33,10 @@
                 <h2 class="relive-title"><?php echo htmlspecialchars($about['journey_title'] ?? 'Our <span class="accent">Journey</span> Began With a Simple Dream'); ?></h2>
                 <p class="relive-lead"><?php echo nl2br(htmlspecialchars($about['journey_lead1'] ?? 'Our goal is to make the best ice cream using only the finest, natural ingredients. From rich, creamy classics to adventurous new creations, every flavor is meticulously crafted in-house to ensure the highest quality and freshness.')); ?></p>
                 <p class="relive-lead"><?php echo nl2br(htmlspecialchars($about['journey_lead2'] ?? 'We take pride in offering a diverse range of options, including dairy-free, vegan, and gluten-free choices, so everyone can find their perfect scoop.')); ?></p>
-                <a href="#" class="btn primary">Read More</a>
             </div>
         </div>
     </section>
 
-    <!-- Mission Section (purple background, image right) -->
-    <section class="special about-mission">
-        <div class="container special-inner">
-            <div class="special-left">
-                <h2 class="special-title"><?php echo htmlspecialchars($about['mission_title'] ?? "Our Mission is to<br/>Create Moments"); ?></h2>
-                <p class="special-lead"><?php echo nl2br(htmlspecialchars($about['mission_lead'] ?? 'We strive to foster a welcoming and joyful environment where customers of all ages can gather, celebrate, and make lasting memories. Our commitment extends beyond serving great ice cream.')); ?></p>
-                <a href="#" class="special-cta">Read More</a>
-            </div>
-            <div class="special-right">
-                <?php if (!empty($about['mission_image'])): ?>
-                    <img src="<?php echo base_url($about['mission_image']); ?>" alt="Team enjoying" class="special-image"/>
-                <?php else: ?>
-                    <img src="<?php echo base_url('assets/images/placeholder.svg'); ?>" alt="Team enjoying" class="special-image"/>
-                <?php endif; ?>
-            </div>
-        </div>
-    </section>
 
     <!-- Team -->
     <section class="about-team">

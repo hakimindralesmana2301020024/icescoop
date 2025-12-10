@@ -73,6 +73,21 @@ public function menudetail($id = null) {
             if (empty($product['image'])) $product['image'] = 'assets/images/placeholder.svg';
             $product['img_url'] = base_url($product['image']);
             if (!isset($product['desc'])) $product['desc'] = $product['description'] ?? '';
+            // load size variants for this product (product_sizes joined with sizes)
+            try {
+                $this->load->database();
+                if ($this->db->table_exists('product_sizes')) {
+                    $rows = $this->db->select('ps.id as ps_id, ps.price as price, s.id as size_id, s.label as label, s.slug as slug')
+                        ->from('product_sizes ps')
+                        ->join('sizes s', 's.id = ps.size_id', 'left')
+                        ->where('ps.product_id', (int)$id)
+                        ->order_by('ps.id', 'ASC')
+                        ->get()->result_array();
+                    if (!empty($rows)) $product['sizes'] = $rows;
+                }
+            } catch (Exception $e) {
+                // ignore DB errors
+            }
         }
     }
 

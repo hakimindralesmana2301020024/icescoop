@@ -80,6 +80,25 @@ class Login extends CI_Controller {
                 'logged_in' => true
             ]);
 
+            // If a per-user cart table exists, try to load cart for this user into session
+            try {
+                $this->load->database();
+                if ($this->db->table_exists('user_carts')) {
+                    $cartRow = $this->db->where('user_id', $user['id'])->get('user_carts')->row_array();
+                    if (!empty($cartRow) && !empty($cartRow['cart'])) {
+                        $cartData = json_decode($cartRow['cart'], true);
+                        if (is_array($cartData)) {
+                            $this->session->set_userdata('cart', $cartData);
+                            // update cart_count
+                            $count = 0; foreach ($cartData as $it) { $count += isset($it['qty']) ? (int)$it['qty'] : 0; }
+                            $this->session->set_userdata('cart_count', $count);
+                        }
+                    }
+                }
+            } catch (Exception $e) {
+                // ignore DB read errors here
+            }
+
             $this->session->set_flashdata('success', 'Berhasil masuk.');
             // Redirect back to intended page if provided (e.g., admin area)
             $return = $this->input->get('return', true);
@@ -148,7 +167,44 @@ class Login extends CI_Controller {
     {
         // Preserve return URL so user stays on the same page after logout
         $return = $this->input->get('return', true);
+        // Before destroying session, if user has an account, persist their cart to DB (if table exists)
+        try {
+            $userId = $this->session->userdata('user_id');
+            $cart = $this->session->userdata('cart') ?: [];
+            if (!empty($userId) && !empty($cart)) {
+                $this->load->database();
+                if ($this->db->table_exists('user_carts')) {
+                    $exists = $this->db->where('user_id', $userId)->get('user_carts')->row_array();
+                    $row = ['user_id' => $userId, 'cart' => json_encode($cart), 'updated_at' => date('Y-m-d H:i:s')];
+                    if (!empty($exists)) {
+                        $this->db->where('user_id', $userId)->update('user_carts', $row);
+                    } else {
+                        $this->db->insert('user_carts', $row);
+                    }
+                }
+            }
+        } catch (Exception $e) {
+            // ignore DB write errors
+        }
+
+        // Preserve non-auth session data so orders/cart remain after logout
+        $preserve = [];
+        $preserve_keys = ['orders', 'cart', 'cart_count', 'last_order'];
+        foreach ($preserve_keys as $k) {
+            $val = $this->session->userdata($k);
+            if (!is_null($val)) {
+                $preserve[$k] = $val;
+            }
+        }
+
+        // Destroy session (clears auth data)
         $this->session->sess_destroy();
+
+        // Start a fresh session and restore preserved keys
+        if (!empty($preserve)) {
+            // set_userdata will create a new session with these keys
+            $this->session->set_userdata($preserve);
+        }
         if ($return) {
             // If a full URL (starts with http) redirect directly, otherwise build full url
             redirect($return);

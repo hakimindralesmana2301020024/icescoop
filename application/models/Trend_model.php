@@ -66,6 +66,77 @@ class Trend_model extends CI_Model {
     }
 
     /**
+     * Get last N days aggregated values for a metric (default 30 days)
+     * Returns array of ['date' => 'YYYY-MM-DD', 'value' => int]
+     */
+    public function get_daily($metric = 'revenue', $days = 30)
+    {
+        $days = max(1, (int)$days);
+        $sql = "SELECT DATE(created_at) AS day, SUM(value) AS total
+                FROM weekly_trends
+                WHERE metric = ? AND DATE(created_at) >= DATE_SUB(CURDATE(), INTERVAL " . ($days - 1) . " DAY)
+                GROUP BY DATE(created_at)
+                ORDER BY DATE(created_at) ASC";
+
+        $rows = $this->db->query($sql, [$metric])->result_array();
+        $map = [];
+        foreach ($rows as $r) {
+            $map[$r['day']] = (int)$r['total'];
+        }
+
+        $out = [];
+        for ($i = $days - 1; $i >= 0; $i--) {
+            $d = date('Y-m-d', strtotime("-{$i} days"));
+            $out[] = ['date' => $d, 'value' => isset($map[$d]) ? $map[$d] : 0];
+        }
+
+        return $out;
+    }
+
+    /**
+     * Build daily revenue from `orders` table by summing `summary` JSON total.
+     * Returns array of ['date' => 'YYYY-MM-DD', 'value' => int]
+     */
+    public function get_daily_from_orders($days = 30)
+    {
+        $days = max(1, (int)$days);
+        // Try to sum JSON summary->total; fallback to parsing if JSON functions not available
+        $sql = "SELECT DATE(created_at) AS day, 
+                    SUM(COALESCE(CAST(JSON_UNQUOTE(JSON_EXTRACT(summary, '$$.total')) AS DECIMAL(12,2)), 0)) AS total
+                FROM orders
+                WHERE DATE(created_at) >= DATE_SUB(CURDATE(), INTERVAL " . ($days - 1) . " DAY)
+                GROUP BY DATE(created_at)
+                ORDER BY DATE(created_at) ASC";
+
+        try {
+            $rows = $this->db->query($sql)->result_array();
+        } catch (Exception $e) {
+            // If JSON functions are not supported, attempt a safer fallback: treat `summary` as text and try to extract numbers via replace
+            $sql2 = "SELECT DATE(created_at) AS day, SUM(
+                        COALESCE(CAST(REGEXP_REPLACE(summary, '[^0-9\\.]', '') AS DECIMAL(12,2)), 0)
+                    ) AS total
+                    FROM orders
+                    WHERE DATE(created_at) >= DATE_SUB(CURDATE(), INTERVAL " . ($days - 1) . " DAY)
+                    GROUP BY DATE(created_at)
+                    ORDER BY DATE(created_at) ASC";
+            try { $rows = $this->db->query($sql2)->result_array(); } catch(Exception $e2) { $rows = []; }
+        }
+
+        $map = [];
+        foreach ($rows as $r) {
+            $map[$r['day']] = isset($r['total']) ? (int)round($r['total']) : 0;
+        }
+
+        $out = [];
+        for ($i = $days - 1; $i >= 0; $i--) {
+            $d = date('Y-m-d', strtotime("-{$i} days"));
+            $out[] = ['date' => $d, 'value' => isset($map[$d]) ? $map[$d] : 0];
+        }
+
+        return $out;
+    }
+
+    /**
      * Get total sum for a metric (all time)
      */
     public function get_total($metric = 'orders')

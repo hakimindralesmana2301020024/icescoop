@@ -1,0 +1,97 @@
+/* admin-orders.css
+   Styling improvements for Admin -> Orders page
+*/
+
+/* Base table tweaks */
+.admin-page .table {
+  font-size: 14px;
+}
+.admin-page th,
+.admin-page td {
+  vertical-align: middle !important;
+}
+
+/* Status badges */
+.admin-page .badge {
+  font-size: 0.82rem;
+  padding: 0.35em 0.6em;
+  border-radius: 0.4rem;
+}
+
+/* Fresh header + card feel */
+.admin-page .card {
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(12,12,12,0.06);
+}
+
+/* Order row layout tweaks */
+.admin-page tbody tr.order-row { background: #fff; border-radius:8px; }
+.admin-page tbody tr.order-row td { border-top: 0; }
+.admin-page .customer-block{ display:flex; gap:12px; align-items:flex-start }
+.admin-page .avatar{ width:44px;height:44px;border-radius:50%; background:linear-gradient(135deg,#7b4cff,#4f7bff); color:#fff; display:flex;align-items:center;justify-content:center;font-weight:700 }
+.admin-page .customer-info { min-width:0 }
+.admin-page .customer-name{ font-weight:700; }
+.admin-page .customer-addr{ color:#6c757d; font-size:0.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+
+.admin-page .items-col .items-summary{ color:#495057 }
+.admin-page .proof-thumb{ width:72px;height:48px;object-fit:cover;border-radius:6px;border:1px solid #ececec }
+.admin-page .total-amount{ font-weight:700; color:#212529 }
+
+/* Status label variations */
+.admin-page .status-label.bg-danger { background:#ffe9e9; color:#a20000; border:1px solid rgba(162,0,0,0.08) }
+.admin-page .status-label.bg-warning { background:#fff7e6; color:#6a4a00 }
+.admin-page .status-label.bg-info { background:#eef9ff; color:#064e64 }
+.admin-page .status-label.bg-success { background:#e8f7ef; color:#0f6f3d }
+.admin-page .status-label.bg-light { background:#fafafa; color:#666 }
+
+/* Actions styling */
+.admin-page .btn-group .btn { min-width:72px }
+
+
+/* Proof thumbnail */
+.admin-page .proof-thumb {
+  width: 72px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+  display: inline-block;
+}
+
+/* Customer column */
+.admin-page .customer-name {
+  font-weight: 600;
+}
+.admin-page .customer-addr {
+  color: #6c757d;
+  font-size: 0.9rem;
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
+
+.admin-page .items-summary {
+  font-size: 0.95rem;
+  color: #333;
+}
+
+/* Action buttons */
+.admin-page .btn-group .btn {
+  min-width: 68px;
+}
+.admin-page td .btn { margin-right: 6px; }
+
+/* Small devices: simplify table */
+@media (max-width: 768px) {
+  .admin-page .customer-addr { display: none; }
+  .admin-page .table thead { display: none; }
+  .admin-page .table tbody td { display: block; width: 100%; padding:10px 12px; }
+  .admin-page .proof-thumb { width: 60px; height: 44px; }
+  .admin-page tbody tr.order-row { display:block; margin:10px 0; box-shadow: 0 6px 18px rgba(10,10,10,0.04); border-radius:10px; }
+  .admin-page .actions-col .btn { width:100%; margin:6px 0 }
+}
+
+/* subtle row hover */
+.admin-page .table tbody tr:hover { background: #fbfbfd; }

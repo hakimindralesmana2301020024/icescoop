@@ -16,46 +16,21 @@
         <div class="container checkout-main-inner">
             <div class="checkout-left">
                 <div class="billing-box">
-                    <h3 class="billing-title">Billing Address:</h3>
-                    <form class="billing-form">
-                        <div class="row">
-                            <div class="col"><label>First name</label><input type="text" class="input" placeholder="First name"></div>
-                            <div class="col"><label>Last name</label><input type="text" class="input" placeholder="Last name"></div>
-                        </div>
-                        <div class="row">
-                            <div class="col"><label>Email address</label><input type="email" class="input" placeholder="Email address"></div>
-                            <div class="col"><label>State</label>
-                                <select class="input"><option>Select State</option><option>State 1</option></select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col"><label>City</label>
-                                <select class="input"><option>Select City</option><option>City 1</option></select>
-                            </div>
-                            <div class="col"><label>Zip / postal code</label><input type="text" class="input" placeholder="Zip / postal code"></div>
-                        </div>
-                    </form>
+                    <h3 class="billing-title">Payment</h3>
+                    <form class="payment-form" method="post" action="<?= base_url('index.php/order/place'); ?>">
+                        <div class="field"><label>Full name</label><input type="text" name="customer_name" class="input" placeholder="Full name" required /></div>
+                        <div class="field"><label>WhatsApp number</label><input type="text" name="customer_phone" class="input" placeholder="08xx.... (WhatsApp)" required /></div>
+                        <div class="field"><label>Address</label><textarea name="customer_address" class="input" placeholder="Delivery address" rows="3" required></textarea></div>
 
-                    <h4 class="payment-title">Payment Method:</h4>
-                    <form class="payment-form">
-                        <label class="radio-row"><input type="radio" name="pay" checked> Credit card <span class="card-icons"> <img src="<?php echo base_url('assets/images/cc-icons.png'); ?>" alt="cards"/></span></label>
-
-                        <div class="field"><label>Card number</label><input type="text" class="input" placeholder="0000 0000 0000 0000"></div>
-
-                        <div class="row small">
-                            <div class="col"><label>Expiration date</label>
-                                <div class="inline-selects">
-                                    <select class="input small"><option>Month</option></select>
-                                    <select class="input small"><option>Year</option></select>
-                                </div>
-                            </div>
-                            <div class="col"><label>Security Code</label><input type="text" class="input" placeholder="CVV"></div>
+                        <label class="radio-row"><input type="radio" name="pay" value="qris" checked> QRIS</label>
+                        <div id="qris-preview" style="margin:12px 0">
+                            <img src="<?= base_url('assets/images/qris.png'); ?>" alt="QRIS" style="max-width:220px;display:block" onerror="this.style.display='none'" />
                         </div>
 
-                        <label class="radio-row"><input type="radio" name="pay"> Cash on Delivery</label>
+                        <label class="radio-row"><input type="radio" name="pay" value="cod"> Cash on Delivery (COD)</label>
 
                         <p class="small-note">By clicking the button, you agree to the Terms and Conditions</p>
-                        <button class="btn order-now">Place Order Now</button>
+                        <button type="submit" class="btn order-now">Place Order Now</button>
                     </form>
                 </div>
             </div>
@@ -66,7 +41,11 @@
                     <div class="summary-list">
                         <?php if(isset($cart) && is_array($cart)): foreach($cart as $c): ?>
                         <div class="summary-item">
-                            <div class="s-left"><span class="qty"><?php echo (int)($c['qty'] ?? 0); ?>x</span> <span class="s-name"><?php echo htmlspecialchars($c['name'] ?? ''); ?></span></div>
+                            <div class="s-left"><span class="qty"><?php echo (int)($c['qty'] ?? 0); ?>x</span> <span class="s-name"><?php echo htmlspecialchars($c['name'] ?? ''); ?></span>
+                                <?php if (!empty($c['size_label']) || !empty($c['size'])): ?>
+                                    <div class="s-meta" style="font-size:13px;color:#666">Size: <?= htmlspecialchars($c['size_label'] ?? $c['size']); ?></div>
+                                <?php endif; ?>
+                            </div>
                             <div class="s-right"><?= format_rp($c['total'] ?? 0); ?></div>
                         </div>
                         <?php endforeach; endif; ?>

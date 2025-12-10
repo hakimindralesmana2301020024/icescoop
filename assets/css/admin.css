@@ -1,5 +1,11 @@
 /* Minimal admin styles for hard-coded preview */
-:root{--admin-bg:#f5f7fb;--admin-sidebar:#222037;--admin-accent:#683292;--muted:#6b6b6b}
+:root{
+    --admin-bg:#f4f6ff; /* very light indigo tint */
+    --admin-sidebar:#0f1724; /* deep navy for stronger contrast */
+    --admin-accent:#5b6cff; /* primary accent (indigo) */
+    --muted:#6b7280; /* neutral muted text */
+    --muted-soft:#9aa0b4;
+}
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--admin-bg);color:#222}
 .admin-shell{display:flex;min-height:100vh}
@@ -7,38 +13,128 @@ body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--admin-bg);
 /* Make sidebar fixed so it doesn't scroll with page content */
 .admin-sidebar{position:fixed;top:0;left:0;bottom:0;height:100vh;overflow:auto;z-index:30}
 .admin-brand{font-size:20px;font-weight:700;margin-bottom:18px}
-.admin-brand .muted{font-weight:400;color:#c6b8d6;font-size:12px}
-.admin-nav a{display:block;color:#dfe2f5;padding:10px 12px;border-radius:8px;text-decoration:none;margin-bottom:6px}
+.admin-brand .muted{font-weight:400;color:var(--muted-soft);font-size:12px}
+.admin-nav a{display:block;color:#cbd6ff;padding:10px 12px;border-radius:8px;text-decoration:none;margin-bottom:6px}
 .admin-nav a i{margin-right:8px}
-.admin-nav a.active{background:rgba(255,255,255,0.06);color:#fff}
+.admin-nav a.active{background:rgba(91,108,255,0.12);color:#fff}
 .admin-nav .nav-item{margin-bottom:8px}
-.admin-nav .nav-item .sub-toggle{display:flex;align-items:center;gap:8px;width:100%;background:transparent;border:none;color:#dfe2f5;padding:10px 12px;border-radius:8px;cursor:pointer;text-align:left}
+.admin-nav .nav-item .sub-toggle{display:flex;align-items:center;gap:8px;width:100%;background:transparent;border:none;color:#cbd6ff;padding:10px 12px;border-radius:8px;cursor:pointer;text-align:left}
 .admin-nav .nav-item .sub-toggle .sub-caret{margin-left:auto;color:rgba(255,255,255,0.6)}
 .admin-nav .admin-submenu{display:none;flex-direction:column;margin-top:6px;margin-left:8px;padding-left:8px;border-left:2px solid rgba(255,255,255,0.03)}
-.admin-nav .admin-submenu a{padding:8px 12px;border-radius:6px;background:transparent;color:#dfe2f5;margin-bottom:6px;font-size:14px}
+.admin-nav .admin-submenu a{padding:8px 12px;border-radius:6px;background:transparent;color:#cbd6ff;margin-bottom:6px;font-size:14px}
 .admin-nav .nav-item.open .admin-submenu{display:flex}
 .admin-nav .nav-item.open .sub-toggle{background:rgba(255,255,255,0.03)}
 .admin-main{flex:1;display:flex;flex-direction:column;margin-left:220px}
 .admin-topbar{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;background:transparent;border-bottom:1px solid rgba(0,0,0,0.04)}
+
+/* Menu polish: cleaner buttons, spacing and responsive overlay behavior */
+.admin-nav a{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;text-decoration:none;color:#cbd6ff;transition:background .12s, color .12s}
+.admin-nav a i{min-width:22px;text-align:center;font-size:18px;color:var(--muted-soft)}
+.admin-nav a:hover{background:rgba(91,108,255,0.08);color:#fff}
+.admin-nav a.active{background:var(--admin-accent);color:#fff;box-shadow:0 8px 28px rgba(91,108,255,0.08)}
+.admin-nav .nav-item .sub-toggle{padding:10px 14px;border-radius:10px}
+.admin-nav .nav-item.open .sub-toggle{background:rgba(91,108,255,0.06)}
+.admin-nav .sub-caret{transition:transform .18s ease}
+.admin-nav .nav-item.open .sub-caret{transform:rotate(-180deg)}
+
+/* Submenu items slightly indented and softer */
+.admin-nav .admin-submenu a{padding-left:22px;color:#cbd6ff}
+
+/* Larger tappable targets when sidebar opens as overlay on mobile */
+.admin-shell.open-sidebar .admin-sidebar{width:280px;padding:24px 18px}
+.admin-shell.open-sidebar .admin-sidebar .admin-nav a{font-size:17px;padding:14px 16px;border-radius:8px}
+.admin-shell.open-sidebar .admin-sidebar .admin-nav .admin-submenu a{padding-left:30px;font-size:15px}
+
+/* Make badges inside nav look cleaner */
+.admin-nav a .badge{margin-left:auto;background:rgba(255,255,255,0.08);color:#fff;border:none;padding:4px 8px;border-radius:10px;font-size:12px}
+
+@media(max-width:900px){
+    .admin-nav a{font-size:16px}
+}
 .top-user{color:var(--muted)}
 .admin-content{padding:24px}
 .admin-footer{padding:12px 24px;color:#666;background:transparent;border-top:1px solid rgba(0,0,0,0.03)}
 
 /* Admin header menu toggle (vertical dropdown) */
 .admin-menu-wrapper{display:flex;align-items:center;position:relative;gap:12px}
-.admin-menu-toggle{background:transparent;border:1px solid rgba(0,0,0,0.06);padding:8px;border-radius:8px;cursor:pointer;color:#222}
+.admin-menu-toggle{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px;border-radius:8px;cursor:pointer;color:#222}
 .admin-menu-toggle i{font-size:18px}
 .admin-menu-list{position:absolute;left:0;top:calc(100% + 8px);background:#fff;border-radius:8px;box-shadow:0 12px 36px rgba(0,0,0,0.08);min-width:160px;display:none;flex-direction:column;overflow:hidden;border:1px solid rgba(0,0,0,0.04);z-index:50}
 .admin-menu-list a{display:block;padding:10px 14px;color:#222;text-decoration:none;border-bottom:1px solid rgba(0,0,0,0.03);font-size:14px}
 .admin-menu-list a:last-child{border-bottom:none}
-.admin-menu-list a:hover{background:rgba(104,50,146,0.04)}
+.admin-menu-list a:hover{background:rgba(91,108,255,0.06)}
 .admin-menu-wrapper.open .admin-menu-list{display:flex}
+
+/* Mobile hamburger for admin sidebar */
+.admin-burger{display:none;background:transparent;border:0;padding:8px;cursor:pointer;font-size:20px;color:var(--muted);border-radius:8px}
+.admin-burger i{font-size:20px}
+
+/* When screen narrow, show burger and hide sidebar by default (already done at 900px),
+   allow burger to open the sidebar as an overlay */
+@media(max-width:900px){
+    .admin-burger{display:inline-flex;align-items:center;justify-content:center}
+    /* ensure sidebar hidden by default (kept for safety) */
+    .admin-sidebar{display:none}
+    /* when admin-shell has open-sidebar, show sidebar as overlay */
+    .admin-shell.open-sidebar .admin-sidebar{display:block;position:fixed;left:0;top:0;bottom:0;width:260px;z-index:999;background:var(--admin-sidebar);padding:24px 16px;box-shadow:0 20px 60px rgba(0,0,0,0.3);overflow:auto}
+    /* dim page when sidebar open */
+    .admin-shell.open-sidebar::after{content:'';position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.35);z-index:900}
+    /* keep admin-main scrollable under overlay */
+    .admin-main{margin-left:0}
+}
 
 
 .dashboard-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:18px}
 .card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 8px 30px rgba(0,0,0,0.04)}
 .stat-title{font-size:13px;color:var(--muted)}
 .stat-value{font-size:22px;font-weight:700;margin-top:8px}
+
+/* Small tweaks for dashboard stat cards */
+.card.stat { display:flex; flex-direction:column; justify-content:space-between; min-height:98px }
+.card.stat .stat-value { font-size:24px; color:var(--admin-accent) }
+.card.stat .btn { margin-top:10px }
+.card.stat .muted { margin-top:6px; color:var(--muted) }
+
+/* Style for dashboard 'Lihat Pesan' button: remove underline and add colored pill */
+.card.stat a.btn-msg{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:6px 10px;
+    background:var(--admin-accent);
+    color:#fff !important;
+    border:none !important;
+    border-radius:8px;
+    text-decoration:none !important;
+    font-weight:600;
+    box-shadow:0 8px 20px rgba(91,108,255,0.10);
+    transition:transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+}
+.card.stat a.btn-msg:hover{ transform:translateY(-2px); box-shadow:0 14px 36px rgba(91,108,255,0.12); opacity:0.98 }
+.card.stat a.btn-msg:active{ transform:translateY(0) }
+
+/* Ensure anchor buttons inside stat cards never show underline */
+.card.stat a{ text-decoration:none !important }
+
+/* Sparkline styling inside stat cards */
+.stat-sparkline{height:46px;margin-top:10px}
+.stat-sparkline canvas{width:100% !important;height:46px !important;display:block}
+
+/* Weekly summary small table under weekly chart */
+.weekly-summary { margin-top:12px }
+.weekly-summary-table { width:100%; border-collapse:collapse; font-size:13px }
+.weekly-summary-table thead th { text-align:left; padding:8px 10px; color:var(--muted); font-weight:700 }
+.weekly-summary-table tbody td { padding:8px 10px; border-top:1px solid #f1f1f1 }
+.weekly-summary-table tbody tr:nth-child(odd) { background:#fff }
+.weekly-summary-table tbody tr:nth-child(even) { background:#fbfbfd }
+.weekly-summary-table td:first-child { color:#374151 }
+.weekly-summary-table td:last-child { font-weight:700; text-align:right }
+
+/* Range buttons for revenue chart */
+.btn-group-range{display:inline-flex;border-radius:8px;overflow:hidden;border:1px solid #e9eef6}
+.btn-group-range .range-btn{border:0;padding:6px 10px;background:transparent;cursor:pointer}
+.btn-group-range .range-btn.active{background:var(--admin-accent);color:#fff}
+.btn-group-range .range-btn:hover{background:rgba(91,108,255,0.06)}
 
 .card.recent h3{margin-top:0}
 .table{width:100%;border-collapse:collapse}
@@ -57,7 +153,7 @@ body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--admin-bg);
 .form-group{margin-bottom:12px}
 .form-group label{display:block;font-weight:600;margin-bottom:6px;color:#333}
 .admin-card .form-control{width:100%;padding:10px;border:1px solid #e6e6e6;border-radius:8px;background:#fff}
-.admin-card .form-control:focus{outline:none;box-shadow:0 6px 20px rgba(104,50,146,0.06);border-color:var(--admin-accent)}
+.admin-card .form-control:focus{outline:none;box-shadow:0 6px 20px rgba(91,108,255,0.06);border-color:var(--admin-accent)}
 .team-row{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;padding:10px;border-radius:8px;background:#fafafa;border:1px solid #f0f0f0}
 .team-row .form-group{flex:1;min-width:180px}
 .team-row img{border-radius:8px;border:1px solid #eee;display:block;max-width:140px}
@@ -71,6 +167,12 @@ body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--admin-bg);
 @media(max-width:800px){
     .team-row{flex-direction:column}
     .team-row img{max-width:180px}
+}
+
+/* Constrain relive preview image in admin home edit form */
+#preview-relive{max-width:140px;height:auto;display:block;border-radius:6px;border:1px solid #eee}
+@media(max-width:800px){
+    #preview-relive{max-width:110px}
 }
 
 @media(max-width:900px){
@@ -88,3 +190,288 @@ body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--admin-bg);
 .charts-row .chart-col{flex:1 1 50%;max-width:50%}
 .charts-row .chart-col .card{height:100%}
 .chart-card .card-body{padding:0}
+
+/* Admin form tidy & responsive tweaks */
+.admin-card .card{margin-bottom:14px}
+.admin-card .row{margin:0 -8px}
+.admin-card .row > [class*="col-"]{padding:0 8px}
+.admin-card .input-group{display:flex;gap:8px;align-items:center}
+.admin-card .input-group .form-control{flex:1 1 auto}
+.admin-card .input-group .btn{flex:0 0 auto}
+.admin-card img[id^="preview-"]{max-width:140px;height:auto;display:block;margin:6px 0;border-radius:6px;border:1px solid #eee}
+.admin-card label.form-label{font-weight:600;margin-bottom:6px;display:block}
+.admin-card .mb-2{margin-bottom:10px}
+.admin-card .card h4{margin-top:0;margin-bottom:8px;font-size:16px}
+.admin-card .form-actions{justify-content:flex-end}
+
+@media (max-width:900px){
+    .admin-card{padding:14px;margin:0 10px}
+    .admin-card .row{display:block;margin:0}
+    .admin-card .row > [class*="col-"]{padding:0;margin-bottom:10px;width:100% !important}
+    .admin-card .input-group{flex-direction:column;align-items:stretch}
+    .admin-card .input-group .btn{width:100%}
+    .admin-card img[id^="preview-"]{max-width:120px;margin-left:auto;margin-right:auto}
+    .admin-card .form-actions{flex-direction:column;gap:8px}
+}
+
+/* Slight visual rhythm on desktop */
+@media (min-width:901px){
+    .admin-card .card{padding:16px}
+}
+
+/* Button & form polish to make admin UI cleaner and reduce layout shift */
+.admin-card .btn{padding:8px 12px;border-radius:10px;transition:all .12s ease;box-shadow:none}
+.admin-card .btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(91,108,255,0.08)}
+.admin-card .btn-outline-secondary{background:transparent;border:1px solid #dcd7df;color:#333}
+.admin-card .btn-outline-secondary:hover{background:rgba(91,108,255,0.04);color:var(--admin-accent)}
+.admin-card .btn.primary{background:var(--admin-accent);color:#fff;border:none;padding:10px 14px}
+
+/* Stable control heights to minimize content jumping */
+.admin-card .form-control{min-height:42px;padding:10px 12px;font-size:14px}
+.admin-card textarea.form-control{min-height:84px;resize:vertical}
+.admin-card .input-group .form-control{min-height:42px}
+
+/* File input + replace button: keep same height and prevent wrapping */
+.admin-card .input-group{align-items:center}
+.admin-card .input-group .form-control[type="file"]{padding:6px 8px}
+.admin-card .input-group .btn{white-space:nowrap}
+
+/* Preview image layout: reserve space to avoid shift while loading */
+.admin-card .preview-box{width:140px;min-width:96px;max-width:140px;display:block}
+.admin-card img[id^="preview-"]{width:100%;height:auto;display:block}
+
+/* Keep column alignment stable on medium screens */
+@media (min-width:700px){
+    .admin-card .row{display:flex;flex-wrap:wrap}
+    .admin-card .row > [class*="col-"]{display:block}
+}
+
+/* Mobile: avoid horizontal shifts by locking widths & stacking predictably */
+@media (max-width:700px){
+    .admin-card{padding:12px}
+    .admin-card .input-group{gap:6px}
+    .admin-card .form-control{font-size:15px}
+    .admin-card img[id^="preview-"]{max-width:120px}
+    /* Ensure buttons don't reflow text; make file inputs full-width stacked */
+    .admin-card .input-group{flex-direction:column}
+    .admin-card .input-group .btn{width:100%;box-sizing:border-box}
+}
+
+/* Utility: make preview-image container available in views if needed */
+.preview-inline{display:inline-block;vertical-align:middle;margin-right:10px}
+
+/* Admin table (Manage Menu Products) styling */
+.admin-card .admin-table-responsive{overflow-x:auto;margin-bottom:12px}
+.admin-card table.admin-table{width:100%;border-collapse:collapse;background:transparent}
+.admin-card table.admin-table thead th{background:transparent;color:var(--muted);font-weight:700;padding:12px 14px;text-align:left;border-bottom:1px solid rgba(0,0,0,0.04)}
+.admin-card table.admin-table tbody td{padding:12px 14px;vertical-align:middle;border-bottom:1px solid rgba(0,0,0,0.03)}
+.admin-card table.admin-table tbody tr:hover{background:rgba(91,108,255,0.02)}
+.admin-card table.admin-table img{max-width:64px;border-radius:8px}
+
+/* Action buttons in table */
+.admin-card table.admin-table td a.action-edit{display:inline-block;margin-right:8px;padding:6px 10px;border-radius:8px;border:1px solid rgba(91,108,255,0.12);color:var(--admin-accent);text-decoration:none;background:transparent}
+.admin-card table.admin-table td a.action-edit:hover{background:rgba(91,108,255,0.08);color:#fff}
+.admin-card table.admin-table td a.action-delete{display:inline-block;padding:6px 10px;border-radius:8px;border:1px solid rgba(220,36,36,0.12);color:#c0392b;text-decoration:none;background:transparent}
+.admin-card table.admin-table td a.action-delete:hover{background:rgba(192,40,40,0.08);color:#fff}
+
+/* Ensure existing bootstrap .btn-primary looks consistent with palette */
+.admin-card .btn-primary{background:var(--admin-accent);border-color:var(--admin-accent);color:#fff}
+.admin-card .btn-primary:hover{background:#4858e6;border-color:#3f4fe0}
+
+/* Remove underlines from anchor-buttons in admin pages (fixes Add Product underline) */
+.admin-card a.btn, .admin-card a.btn *{text-decoration:none !important}
+.admin-card a.btn:hover, .admin-card a.btn:focus{text-decoration:none !important}
+.admin-card a.btn{text-underline-offset:4px}
+
+@media (max-width:600px){
+    .admin-card table.admin-table thead th{display:none}
+    .admin-card table.admin-table tbody td{display:block;padding:10px;border-bottom:1px solid rgba(0,0,0,0.04)}
+    .admin-card table.admin-table tbody tr{display:block;margin-bottom:10px;background:#fff;padding:10px;border-radius:8px;box-shadow:0 6px 18px rgba(16,24,40,0.02)}
+    .admin-card table.admin-table td img{max-width:72px;margin-bottom:8px}
+    .admin-card .admin-table-responsive{overflow:visible}
+}
+
+/* Home edit specific styles: tidy hero, featured items, categories, and buttons */
+.admin-card.home-edit{max-width:980px;padding:22px;margin:0 auto}
+.admin-card.home-edit .section-wrap{margin-bottom:18px}
+.admin-card.home-edit .hero-preview{display:flex;gap:18px;align-items:flex-start}
+.admin-card.home-edit .hero-preview img{max-width:220px;border-radius:10px;box-shadow:0 10px 30px rgba(16,24,40,0.04);border:1px solid #f1f2f6}
+.admin-card.home-edit .hero-fields{flex:1}
+
+.admin-card.home-edit .featured-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+.admin-card.home-edit .featured-item{background:#fff;border:1px solid #f3f4f6;padding:12px;border-radius:10px;text-align:center;display:flex;flex-direction:column;align-items:stretch}
+.admin-card.home-edit .featured-item img{width:100%;height:140px;object-fit:cover;border-radius:8px}
+.admin-card.home-edit .featured-item .title{font-weight:700;margin-top:8px;font-size:14px;color:#222}
+.admin-card.home-edit .featured-item .rating{margin-top:6px;color:#f59e0b;font-size:13px}
+.admin-card.home-edit .featured-item .price{margin-top:6px;color:var(--muted);font-weight:600}
+
+.admin-card.home-edit .categories-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+.admin-card.home-edit .category{flex:1;min-width:160px;padding:12px;border-radius:10px;border:1px solid #f1f2f6;text-align:center;background:#fff}
+.admin-card.home-edit .category img{max-width:84px;border-radius:8px;margin-bottom:8px}
+
+/* Buttons for home edit: primary (save), secondary (cancel), ghost (replace image) */
+.admin-card.home-edit .btn{border-radius:10px;padding:10px 14px;transition:all .14s ease}
+.admin-card.home-edit .btn.save{background:var(--admin-accent);color:#fff;border:none;box-shadow:0 12px 30px rgba(91,108,255,0.08)}
+.admin-card.home-edit .btn.save:hover{transform:translateY(-1px);filter:brightness(.98)}
+.admin-card.home-edit .btn.cancel{background:transparent;border:1px solid #e6e6e6;color:#333}
+.admin-card.home-edit .btn.ghost{background:transparent;border:1px dashed #e6e6e6;color:var(--muted);padding:8px 10px}
+
+/* Make star rating appear below title on small screens and keep layout stable */
+.admin-card.home-edit .featured-item .meta{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px}
+
+/* Responsive adjustments */
+@media(max-width:900px){
+    .admin-card.home-edit{padding:16px}
+    .admin-card.home-edit .hero-preview{flex-direction:column;align-items:center}
+    .admin-card.home-edit .hero-preview img{max-width:200px}
+    .admin-card.home-edit .featured-grid{grid-template-columns:repeat(2,1fr)}
+}
+
+@media(max-width:600px){
+    .admin-card.home-edit{padding:12px}
+    .admin-card.home-edit .featured-grid{grid-template-columns:1fr}
+    .admin-card.home-edit .featured-item{padding:10px}
+    .admin-card.home-edit .hero-preview img{max-width:160px}
+    .admin-card.home-edit .btn.save,.admin-card.home-edit .btn.cancel{width:100%;display:block}
+    .admin-card.home-edit .categories-row{flex-direction:column}
+}
+
+/* Further polish: cleaner inputs, refined buttons, subtle gradients and focus states */
+.admin-card.home-edit{background:linear-gradient(180deg,#ffffff 0%, #fbfbff 100%);border:1px solid #f1f2f8}
+.admin-card.home-edit .form-group label{color:#374151;font-weight:700;letter-spacing:0.2px}
+.admin-card.home-edit .form-control{background:#fff;border:1px solid #eaedf7;padding:12px 14px;border-radius:12px;box-shadow:inset 0 1px 0 rgba(16,24,40,0.02)}
+.admin-card.home-edit .form-control:focus{outline:none;box-shadow:0 8px 30px rgba(99,102,241,0.12);border-color:rgba(99,102,241,0.9)}
+.admin-card.home-edit textarea.form-control{min-height:96px}
+
+/* File input: visually hide default, keep accessible clickable button */
+.admin-card.home-edit .input-group{align-items:center}
+.admin-card.home-edit input[type="file"]{opacity:0;position:absolute;left:-9999px}
+.admin-card.home-edit .file-btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;border:1px solid #e6e9fb;background:linear-gradient(180deg,#fff,#f6f7ff);color:#334155;cursor:pointer}
+.admin-card.home-edit .file-btn i{font-size:14px}
+
+/* Primary save button: subtle purple gradient for a modern look */
+.admin-card.home-edit .btn.save{background:linear-gradient(90deg,#6d28d9,#7c3aed);border:none;color:#fff;padding:12px 16px;border-radius:14px;box-shadow:0 12px 30px rgba(124,58,237,0.14)}
+.admin-card.home-edit .btn.save:hover{transform:translateY(-2px);filter:brightness(.98)}
+.admin-card.home-edit .btn.save:focus{outline:3px solid rgba(124,58,237,0.16)}
+
+/* Secondary button: outline with soft hover */
+.admin-card.home-edit .btn.cancel{background:transparent;border:1px solid #e6e9fb;color:#374151;padding:10px 14px;border-radius:12px}
+.admin-card.home-edit .btn.cancel:hover{background:#fbfbff}
+
+/* Ghost / subtle actions (replace image) */
+.admin-card.home-edit .btn.ghost{background:transparent;border:none;color:var(--muted);padding:8px}
+.admin-card.home-edit .btn.ghost:hover{color:var(--admin-accent)}
+
+/* Small icon buttons used near previews */
+.admin-card.home-edit .btn-icon{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;border:1px solid #eef0ff;background:#fff;color:var(--muted)}
+.admin-card.home-edit .btn-icon:hover{background:linear-gradient(180deg,#f8f7ff,#f1f0ff);color:var(--admin-accent)}
+
+/* Tighter form actions layout */
+.admin-card.home-edit .form-actions{display:flex;gap:12px;align-items:center;justify-content:flex-end;margin-top:18px}
+@media(max-width:600px){.admin-card.home-edit .form-actions{flex-direction:column-reverse;gap:8px}}
+
+/* Small helpers */
+.admin-card.home-edit .hint{font-size:13px;color:var(--muted);margin-top:6px}
+
+/* --- Consolidated Orders styles (moved from admin-orders.css) --- */
+/* admin-orders: Styling improvements for Admin -> Orders page */
+
+/* Base table tweaks for orders */
+.admin-page .table { font-size: 14px; }
+.admin-page th, .admin-page td { vertical-align: middle !important; }
+
+/* Status badges sizing */
+.admin-page .badge { font-size: 0.82rem; padding: 0.35em 0.6em; border-radius: 0.4rem; }
+
+/* Fresh header + card feel */
+.admin-page .card { border-radius: 10px; box-shadow: 0 6px 20px rgba(12,12,12,0.06); }
+
+/* Order row layout tweaks */
+.admin-page tbody tr.order-row { background: #fff; border-radius:8px; }
+.admin-page tbody tr.order-row td { border-top: 0; }
+.admin-page .customer-block{ display:flex; gap:12px; align-items:flex-start }
+.admin-page .avatar{ width:44px;height:44px;border-radius:50%; background:linear-gradient(135deg,#7b4cff,#4f7bff); color:#fff; display:flex;align-items:center;justify-content:center;font-weight:700 }
+.admin-page .customer-info { min-width:0 }
+.admin-page .customer-name{ font-weight:700; }
+.admin-page .customer-addr{ color:#6c757d; font-size:0.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+
+.admin-page .items-col .items-summary{ color:#495057 }
+.admin-page .proof-thumb{ width:72px;height:48px;object-fit:cover;border-radius:6px;border:1px solid #ececec }
+.admin-page .total-amount{ font-weight:700; color:#212529 }
+
+/* Status label variations (soft backgrounds) */
+.admin-page .status-label.bg-danger { background:#ffe9e9; color:#a20000; border:1px solid rgba(162,0,0,0.08) }
+.admin-page .status-label.bg-warning { background:#fff7e6; color:#6a4a00 }
+.admin-page .status-label.bg-info { background:#eef9ff; color:#064e64 }
+.admin-page .status-label.bg-success { background:#e8f7ef; color:#0f6f3d }
+.admin-page .status-label.bg-light { background:#fafafa; color:#666 }
+
+/* Actions styling */
+.admin-page .btn-group .btn { min-width:72px }
+.admin-page td .btn { margin-right: 6px }
+
+/* Proof thumbnail (duplicate-safe) */
+.admin-page .proof-thumb { width: 72px; height: 48px; object-fit: cover; border-radius: 6px; border: 1px solid #e9ecef; display: inline-block; }
+
+/* Customer column specifics */
+.admin-page .customer-name { font-weight: 600; }
+.admin-page .customer-addr { color: #6c757d; font-size: 0.9rem; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+
+.admin-page .items-summary { font-size: 0.95rem; color: #333; }
+
+/* Success / danger button variants for admin */
+.admin-card .btn-success { background:#10b981;color:#fff;border:none }
+.admin-card .btn-success:hover{filter:brightness(.98);transform:translateY(-1px)}
+.admin-card .btn-danger { background:#ef4444;color:#fff;border:none }
+.admin-card .btn-danger:hover{filter:brightness(.98);transform:translateY(-1px)}
+.admin-card .btn-outline-primary{border:1px solid rgba(91,108,255,0.12);color:var(--admin-accent);background:transparent}
+
+/* small svg icons inside buttons */
+.admin-card .btn svg{width:14px;height:14px;margin-right:8px;vertical-align:-2px;fill:currentColor}
+
+/* Mobile adjustments: simplify orders table */
+@media (max-width: 768px) {
+    .admin-page .customer-addr { display: none; }
+    .admin-page .table thead { display: none; }
+    .admin-page .table tbody td { display: block; width: 100%; padding:10px 12px; }
+    .admin-page .proof-thumb { width: 60px; height: 44px; }
+    .admin-page tbody tr.order-row { display:block; margin:10px 0; box-shadow: 0 6px 18px rgba(10,10,10,0.04); border-radius:10px; }
+    .admin-page .actions-col .btn { width:100%; margin:6px 0 }
+    .payment-col{display:none}
+}
+
+/* subtle row hover */
+.admin-page .table tbody tr:hover { background: #fbfbfd; }
+
+/* end consolidated orders styles */
+
+/* --- Order Detail page styles --- */
+.order-detail-page .card{border-radius:12px;border:0;box-shadow:0 10px 30px rgba(16,24,40,0.06)}
+.order-detail-page h2{font-family:inherit;font-size:20px;margin:0;color:#0F0200}
+.order-detail-page .badge{font-size:0.85rem;padding:0.45em 0.7em;border-radius:8px}
+.order-detail-page .customer-section{padding:8px 0}
+.order-detail-page .list-group-item{border:0;padding:12px 14px;border-radius:8px}
+.order-detail-page .list-group-item + .list-group-item{margin-top:8px}
+.order-detail-page .img-fluid{max-height:320px;object-fit:cover;border:1px solid #eef2f5;padding:4px;background:#fff}
+.order-detail-page .summary-row{padding:8px 0;border-bottom:1px dotted rgba(0,0,0,0.04)}
+.order-detail-page .summary-grand{font-size:1.05rem;font-weight:700;margin-top:8px}
+.order-detail-page .btn-danger{background:#ff6b6b;border-color:#ff6b6b}
+.order-detail-page .btn-light{background:#fff;border:1px solid #e9ecef}
+
+@media (max-width: 900px){
+    .order-detail-page .col-md-7,.order-detail-page .col-md-5{width:100%;display:block}
+    .order-detail-page .text-end{text-align:left}
+    .order-detail-page .img-fluid{max-height:220px}
+}
+
+@media (max-width:700px){
+    .order-detail-page .customer-addr{white-space:normal}
+    .order-detail-page .summary-grand{font-size:1rem}
+}
+
+/* end order detail styles */
+
+/* Ensure admin-brand strong appears bold */
+.admin-brand strong{font-weight:700}
+
+

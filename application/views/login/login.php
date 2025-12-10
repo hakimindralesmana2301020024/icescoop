@@ -1,6 +1,7 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 
 <!-- Standalone Login page (no header/footer) -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Berkshire+Swash&family=Archivo:wght@400;600;700&display=swap" rel="stylesheet">
@@ -10,7 +11,7 @@
 <div class="auth-page">
     <div class="auth-card">
         <div class="auth-left">
-            <div class="brand">IcyTales</div>
+            <div class="brand"><strong>Swett Scoop</strong></div>
                         <h2 class="auth-title">Selamat Datang</h2>
                         <p class="auth-sub">Masuk ke akun Anda</p>
 

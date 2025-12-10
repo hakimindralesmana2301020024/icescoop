@@ -70,7 +70,7 @@
                 <p>No products found.</p>
             <?php else: foreach($products as $p): ?>
             <div class="product-card">
-                <div class="product-fav"><i class="bi bi-heart"></i></div>
+                
                 <div class="product-img">
                     <?php if(!empty($p['img'])): ?>
                         <img src="<?= $p['img']; ?>" alt="<?= htmlspecialchars($p['name']); ?>" />

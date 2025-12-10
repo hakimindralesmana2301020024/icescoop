@@ -87,9 +87,75 @@ class Blog extends CI_Controller {
         }
 
         $data = ['posts' => $data_posts];
+        // load categories if available
+        try {
+            $this->load->model('Blog_category_model');
+            $cats = $this->Blog_category_model->get_all();
+        } catch (Exception $e) {
+            $cats = [];
+        }
+        $data['categories'] = $cats;
+
         $this->load->view('templates/header');
         $this->load->view('blog/index', $data);
         $this->load->view('templates/footer');
+    }
+
+    /**
+     * AJAX filter endpoint: returns HTML for posts filtered by category slug (or 'all')
+     */
+    public function filter()
+    {
+        $cat = $this->input->get('category', true);
+        $html = '';
+
+        try {
+            $this->load->model('Blog_model');
+            $this->load->model('Blog_category_model');
+
+            if (!$cat || $cat === 'all') {
+                $posts = $this->Blog_model->get_all();
+            } else {
+                // try slug -> category id
+                $c = $this->Blog_category_model->get_by_slug($cat);
+                if ($c && !empty($c['id'])) {
+                    $post_ids = $this->Blog_category_model->get_post_ids_for_category($c['id']);
+                    if (!empty($post_ids)) {
+                        $this->db->where_in('id', $post_ids);
+                        $this->db->order_by('created_at','DESC');
+                        $posts = $this->db->get('blogs')->result_array();
+                    } else {
+                        $posts = [];
+                    }
+                } else {
+                    // fallback: try matching category name stored in blogs.category (if exists)
+                    $this->db->where('category', $cat);
+                    $posts = $this->db->get('blogs')->result_array();
+                }
+            }
+        } catch (Exception $e) {
+            $posts = [];
+        }
+
+        // render partial HTML for posts grid
+        foreach ($posts as $p) {
+            $title = isset($p['title']) ? htmlspecialchars($p['title']) : '';
+            $excerpt = isset($p['excerpt']) ? htmlspecialchars($p['excerpt']) : '';
+            $img = !empty($p['featured_image']) ? base_url('assets/images/' . $p['featured_image']) : base_url('assets/images/placeholder.svg');
+            $slug = isset($p['slug']) ? $p['slug'] : (isset($p['id']) ? $p['id'] : '');
+            $link = !empty($slug) ? base_url('index.php/blog/'.$slug) : '#';
+            $html .= '<article class="post-card">';
+            $html .= '<div class="post-img"><img src="'. $img . '" alt="'. $title .'"/></div>';
+            $html .= '<div class="post-body">';
+            $html .= '<div class="post-meta">Posted by <strong>Admin</strong></div>';
+            $html .= '<h3 class="post-title">'. $title .'</h3>';
+            $html .= '<p class="post-excerpt">'. $excerpt .'</p>';
+            $html .= '<a href="'. $link .'" class="read-more">Read More</a>';
+            $html .= '</div></article>';
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode(['html' => $html]);
     }
 
     public function details($id = 0)

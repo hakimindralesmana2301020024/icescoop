@@ -10,6 +10,7 @@
             <a class="btn btn-primary" href="<?= base_url('index.php/admin/menu_edit'); ?>">Add Product</a>
         </div>
 
+        <div class="admin-table-responsive">
         <table class="admin-table" style="width:100%">
             <thead><tr><th>ID</th><th>Image</th><th>Name</th><th>Price</th><th>Featured</th><th>Actions</th></tr></thead>
             <tbody>
@@ -21,12 +22,13 @@
                     <td><?= format_rp($p['price'] ?? 0); ?></td>
                     <td><?php echo $p['featured'] ? 'Yes' : 'No'; ?></td>
                     <td>
-                        <a href="<?= base_url('index.php/admin/menu_edit/'.$p['id']); ?>">Edit</a> |
-                        <a href="<?= base_url('index.php/admin/menu_delete/'.$p['id']); ?>" onclick="return confirm('Delete product?')">Delete</a>
+                        <a class="action-edit" href="<?= base_url('index.php/admin/menu_edit/'.$p['id']); ?>">Edit</a>
+                        <a class="action-delete" href="<?= base_url('index.php/admin/menu_delete/'.$p['id']); ?>" onclick="return confirm('Delete product?')">Delete</a>
                     </td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
+        </div>
     </div>
 </div>

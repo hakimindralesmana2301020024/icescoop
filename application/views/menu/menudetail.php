@@ -20,6 +20,36 @@ document.addEventListener('DOMContentLoaded', function(){
     function clamp(v){ v = parseInt(v) || 0; if(v<1) v = 1; return v; }
     if(dec) dec.addEventListener('click', function(){ input.value = clamp(parseInt(input.value)-1); });
     if(inc) inc.addEventListener('click', function(){ input.value = clamp(parseInt(input.value)+1); });
+
+    // size pill behavior: when a pill radio changes, set hidden size_id and update price
+    var sizePills = document.querySelectorAll('.size-pill');
+    var sizeRadioInputs = document.querySelectorAll('.size-radio');
+    var sizeIdInput = document.getElementById('size-id-input');
+    var priceElem = document.getElementById('product-price');
+    var basePrice = priceElem ? parseFloat(priceElem.getAttribute('data-base-price') || 0) : 0;
+    if (sizeRadioInputs && sizeRadioInputs.length && sizeIdInput) {
+        sizeRadioInputs.forEach(function(radio){
+                var handleChange = function(){
+                    if (!this.checked) return;
+                    var val = this.value;
+                    sizeIdInput.value = val;
+                    // find pill element to get price data
+                    var pill = this.closest('.size-pill');
+                    if (pill && pill.dataset && pill.dataset.price) {
+                        var p = parseFloat(pill.dataset.price) || basePrice;
+                        if (priceElem) priceElem.textContent = 'Rp ' + new Intl.NumberFormat('id-ID').format(p).replace(/,/g, '.');
+                    }
+                    // mark active
+                    sizePills.forEach(function(pb){ pb.classList.remove('active'); });
+                    if (pill) pill.classList.add('active');
+                };
+                radio.addEventListener('change', handleChange);
+                // set initial value if checked on load and update UI
+                if (radio.checked) {
+                    handleChange.call(radio);
+                }
+        });
+    }
 });
 </script>
 
@@ -51,13 +81,47 @@ document.addEventListener('DOMContentLoaded', function(){
                     <span class="rating-score"><?= htmlspecialchars($product['rating'] ?? ''); ?></span>
                 </div>
                 <div class="menudetail-title"><?= htmlspecialchars($product['name'] ?? 'Product'); ?></div>
-                <div class="menudetail-price accent"><?= format_rp($product['price'] ?? 0); ?></div>
+                <div class="menudetail-price accent" id="product-price" data-base-price="<?= isset($product['price']) ? (float)$product['price'] : 0; ?>"><?= format_rp($product['price'] ?? 0); ?></div>
                 <div class="menudetail-desc"><?= nl2br(htmlspecialchars($product['desc'] ?? $product['description'] ?? '')); ?></div>
+
+                <?php
+                // If sizes are not provided from the DB yet, provide a hardcoded fallback
+                if (empty($product['sizes']) || !is_array($product['sizes'])) {
+                    $base = isset($product['price']) ? $product['price'] : 0;
+                    $product['sizes'] = [
+                        ['ps_id' => 'S', 'price' => $base, 'label' => 'Small'],
+                        ['ps_id' => 'M', 'price' => $base, 'label' => 'Medium'],
+                        ['ps_id' => 'L', 'price' => $base, 'label' => 'Large'],
+                    ];
+                }
+                if (!empty($product['sizes']) && is_array($product['sizes'])): ?>
+                <style>
+                .menudetail-size { margin:12px 0 18px; }
+                .menudetail-size .label { font-weight:600; margin-bottom:8px; display:block; }
+                .size-pills { display:flex; gap:10px; }
+                .size-pill { width:36px; height:36px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; border:1px solid #ddd; cursor:pointer; background:#fff; }
+                .size-pill.active { background:#F83D8E; border-color:#F83D8E; color:#fff; }
+                .size-pill input { display:none; }
+                </style>
+                <div class="menudetail-size">
+                    <div class="label">Size:</div>
+                    <div class="size-pills" id="size-pills">
+                        <?php foreach ($product['sizes'] as $i => $s): ?>
+                            <?php $initial = strtoupper(substr($s['label'] ?? '', 0, 1)); ?>
+                            <label class="size-pill <?= $i===0 ? 'active' : '' ?>" data-price="<?= htmlspecialchars($s['price']); ?>">
+                                <input type="radio" name="size_id_radio" class="size-radio" value="<?= htmlspecialchars($s['ps_id']); ?>" <?= $i===0 ? 'checked' : '' ?> />
+                                <span class="pill-text"><?= htmlspecialchars($initial ?: $s['label']); ?></span>
+                            </label>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+                <?php endif; ?>
 
                 <div class="menudetail-buy">
                     <form id="add-to-cart-form" method="post" action="<?= base_url('index.php/order/add'); ?>">
                         <input type="hidden" name="mode" value="set" />
                         <input type="hidden" name="product_id" value="<?= htmlspecialchars($product['id'] ?? '') ?>" />
+                        <input type="hidden" name="size_id" id="size-id-input" value="" />
                         <div class="qty-group">
                             <button type="button" class="qty-btn" id="qty-dec">-</button>
                             <input type="text" name="qty" id="qty-input" value="1" class="qty-input" />

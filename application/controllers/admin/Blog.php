@@ -103,6 +103,27 @@ class Blog extends CI_Controller {
             log_message('debug', '[admin/blog/create] insert_id=' . $id . ', affected=' . $affected . ', dberr=' . json_encode($dberr));
 
             if ($id && $affected !== 0) {
+                // Save category selection from dropdown (`category_select`)
+                $selected = $this->input->post('category_select', true);
+                $this->load->model('Blog_category_model');
+                // clear any existing mappings (defensive)
+                $this->db->delete('blog_post_categories', ['post_id' => (int)$id]);
+                if (!empty($selected) && $selected !== 'all') {
+                    $cat = $this->Blog_category_model->get_by_slug($selected);
+                    if ($cat && isset($cat['id'])) {
+                        $this->db->query('INSERT IGNORE INTO `blog_post_categories` (`post_id`,`category_id`) VALUES (?,?)', [(int)$id, $cat['id']]);
+                    } else {
+                        // if mapping table/category not present, fall back to storing string in `blogs.category` if column exists
+                        if ($this->db->field_exists('category', 'blogs')) {
+                            $this->db->where('id', (int)$id)->update('blogs', ['category' => $selected]);
+                        }
+                    }
+                } else {
+                    // selected = all -> clear category column if it exists
+                    if ($this->db->field_exists('category', 'blogs')) {
+                        $this->db->where('id', (int)$id)->update('blogs', ['category' => NULL]);
+                    }
+                }
                 $this->session->set_flashdata('blog_success', 'Post saved successfully.');
                 // if no featured_image was set (upload failed or skipped), try extracting from content_html
                 if (empty($insert['featured_image']) && !empty($insert['content_html'])) {
@@ -134,6 +155,12 @@ class Blog extends CI_Controller {
         }
 
         $data = ['post' => null];
+        // prepare category selection default for the form
+        $data['category_selected'] = 'all';
+        // still load categories list (optional, not used by dropdown)
+        $this->load->model('Blog_category_model');
+        $data['categories'] = $this->Blog_category_model->get_all();
+        $data['selected_categories'] = [];
         $this->load->view('templates/admin_header');
         $this->load->view('admin/blog/form', $data);
         $this->load->view('templates/admin_footer');
@@ -205,6 +232,26 @@ class Blog extends CI_Controller {
                 }
             }
             $this->Blog_model->update($id, $update);
+            // Handle category selection from form: replace mappings / update fallback column
+            $selected = $this->input->post('category_select', true);
+            $this->load->model('Blog_category_model');
+            // remove existing mappings
+            $this->db->delete('blog_post_categories', ['post_id' => (int)$id]);
+            if (!empty($selected) && $selected !== 'all') {
+                $cat = $this->Blog_category_model->get_by_slug($selected);
+                if ($cat && isset($cat['id'])) {
+                    $this->db->query('INSERT IGNORE INTO `blog_post_categories` (`post_id`,`category_id`) VALUES (?,?)', [(int)$id, $cat['id']]);
+                } else {
+                    if ($this->db->field_exists('category', 'blogs')) {
+                        $this->db->where('id', (int)$id)->update('blogs', ['category' => $selected]);
+                    }
+                }
+            } else {
+                if ($this->db->field_exists('category', 'blogs')) {
+                    $this->db->where('id', (int)$id)->update('blogs', ['category' => NULL]);
+                }
+            }
+
             // If featured_image not provided during edit, try extract from content_html
             if (empty($update['featured_image']) && !empty($update['content_html'])) {
                 $this->_extract_and_save_featured($id, $update['content_html']);
@@ -214,6 +261,19 @@ class Blog extends CI_Controller {
         }
 
         $data['post'] = $post;
+        // load categories and selected ones for the edit form
+        $this->load->model('Blog_category_model');
+        $data['categories'] = $this->Blog_category_model->get_all();
+        $sel = $this->Blog_category_model->get_for_post($post['id']);
+        $data['selected_categories'] = array_map(function($c){ return $c['id']; }, $sel);
+        // determine single-category selection for dropdown: prefer mapped category slug, else post.category, else 'all'
+        $cat_slug = 'all';
+        if (!empty($sel) && isset($sel[0]['slug'])) {
+            $cat_slug = $sel[0]['slug'];
+        } elseif (!empty($post) && isset($post['category']) && $post['category']) {
+            $cat_slug = $post['category'];
+        }
+        $data['category_selected'] = $cat_slug;
         $this->load->view('templates/admin_header');
         $this->load->view('admin/blog/form', $data);
         $this->load->view('templates/admin_footer');

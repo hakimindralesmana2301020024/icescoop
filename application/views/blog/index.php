@@ -13,22 +13,33 @@
     </section>
 
     <section class="blog-controls">
-        <div class="container">
-            <ul class="blog-cats">
-                <li class="active">All</li>
-                <li>Advices</li>
-                <li>Announcements</li>
-                <li>News</li>
-                <li>Consultation</li>
-                <li>Development</li>
-            </ul>
-        </div>
-    </section>
+    <div class="container">
+        <ul class="blog-cats" id="blog-cats">
+            <!-- <li class="active" data-slug="all">All</li> -->
+
+            <?php if (!empty($categories) && is_array($categories)): ?>
+                <?php foreach($categories as $c): ?>
+                    <li data-slug="<?= htmlspecialchars($c['slug']); ?>">
+                        <?= htmlspecialchars($c['name']); ?>
+                    </li>
+                <?php endforeach; ?>
+
+            <?php else: /*
+                <li data-slug="activity">Activity</li>
+                <li data-slug="announcements">Announcements</li>
+                <li data-slug="news">News</li>
+            */ ?>
+            <?php endif; ?>
+
+        </ul>
+    </div>
+</section>
+
 
     <section class="blog-list">
         <div class="container blog-list-inner">
             <?php if(isset($posts) && is_array($posts)): ?>
-            <div class="posts-grid">
+            <div class="posts-grid" id="posts-grid">
                 <?php foreach($posts as $k => $p): ?>
                 <article class="post-card">
                     <div class="post-img"><img src="<?php echo $p['img']; ?>" alt="<?php echo $p['title']; ?>"/></div>
@@ -43,18 +54,50 @@
                     </div>
                 </article>
                 <?php endforeach; ?>
-            </div>
+                </div>
             <?php endif; ?>
 
-            <div class="blog-pagination">
-                <a href="#">&lt;</a>
-                <a href="#">1</a>
-                <a href="#" class="active">2</a>
-                <a href="#">3</a>
-                <a href="#">4</a>
-                <a href="#">5</a>
-                <a href="#">&gt;</a>
-            </div>
+            <!--
+<div class="blog-pagination">
+    <a href="#">&lt;</a>
+    <a href="#">1</a>
+    <a href="#" class="active">2</a>
+    <a href="#">3</a>
+    <a href="#">4</a>
+    <a href="#">5</a>
+    <a href="#">&gt;</a>
+</div>
+-->
+
         </div>
     </section>
 </div>
+
+    <script>
+    // Blog category filter (AJAX)
+    (function(){
+        function onCatClick(e){
+            var li = e.target.closest('li');
+            if (!li) return;
+            var slug = li.getAttribute('data-slug') || 'all';
+            // set active
+            document.querySelectorAll('#blog-cats li').forEach(function(x){ x.classList.remove('active'); });
+            li.classList.add('active');
+
+            // fetch posts
+            fetch('<?= base_url('index.php/blog/filter'); ?>?category=' + encodeURIComponent(slug))
+                .then(function(r){ return r.json(); })
+                .then(function(data){
+                    var grid = document.getElementById('posts-grid');
+                    if (!grid) return;
+                    grid.innerHTML = data.html || '<div style="padding:18px">No posts found.</div>';
+                }).catch(function(){ /* ignore errors for now */ });
+        }
+
+        document.addEventListener('DOMContentLoaded', function(){
+            var ul = document.getElementById('blog-cats');
+            if (!ul) return;
+            ul.addEventListener('click', function(e){ onCatClick(e); });
+        });
+    })();
+    </script>

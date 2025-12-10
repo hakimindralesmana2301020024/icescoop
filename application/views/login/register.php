@@ -10,7 +10,7 @@
 <div class="auth-page">
     <div class="auth-card">
         <div class="auth-left">
-            <div class="brand">IcyTales</div>
+            <div class="brand"><strong>Swett Scoop</strong></div>
             <h2 class="auth-title">Buat Akun</h2>
             <p class="auth-sub">Daftar untuk menikmati produk kami</p>
 

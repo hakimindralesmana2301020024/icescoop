@@ -17,8 +17,8 @@
                 <div class="contact-card">
                     <div class="circle"><i class="bi bi-geo-alt-fill"></i></div>
                     <div class="card-text">
-                        <h4>Our Location</h4>
-                        <p>121 King Street, Melbourne, Victoria 3000, Australia</p>
+                        <h4>Location</h4>
+                        <p><span class="location-text">Tepi Laut, Tanjungpinang</span></p>
                     </div>
                 </div>
 
@@ -26,7 +26,7 @@
                     <div class="circle"><i class="bi bi-telephone-fill"></i></div>
                     <div class="card-text">
                         <h4>Phone Number</h4>
-                        <p>+61 3 8376 6284<br/>(+00) 1234 67890</p>
+                        <p>+6283137412551<br/>+6282220439122</p>
                     </div>
                 </div>
 
@@ -34,14 +34,24 @@
                     <div class="circle"><i class="bi bi-envelope-fill"></i></div>
                     <div class="card-text">
                         <h4>Email us at</h4>
-                        <p>info@example.com<br/>sales@example.com</p>
+                        <p>sweetscooptpl@gmail.com</p>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="right-col">
-            <form class="contact-form" method="post" action="#">
+            <?php if (
+                isset(
+                    $this->session
+                ) && $this->session->flashdata('contact_success')): ?>
+                <div class="alert alert-success"><?= htmlspecialchars($this->session->flashdata('contact_success')); ?></div>
+            <?php endif; ?>
+            <?php if (isset($this->session) && $this->session->flashdata('contact_error')): ?>
+                <div class="alert alert-danger"><?= htmlspecialchars($this->session->flashdata('contact_error')); ?></div>
+            <?php endif; ?>
+
+            <form class="contact-form" method="post" action="<?= base_url('index.php/contact/submit'); ?>">
                 <div class="row two">
                     <input type="text" name="first_name" placeholder="First Name" required>
                     <input type="text" name="last_name" placeholder="Last Name">
@@ -57,16 +67,13 @@
                 </div>
 
                 <div class="row">
-                    <button class="btn-submit">Submit Now <span class="arrow">➜</span></button>
+                    <button type="submit" class="btn-submit">Submit Now <span class="arrow">➜</span></button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<div class="map-full">
-    <iframe width="100%" height="420" frameborder="0" style="border:0" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.8354345093747!2d144.9630579153166!3d-37.81627917975198!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad65d43f1f0a9b1%3A0x5045675218ce6e0!2sMelbourne%20VIC%2C%20Australia!5e0!3m2!1sen!2sid!4v1618888888888!5m2!1sen!2sid" allowfullscreen></iframe>
-</div>
 
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;600&display=swap');
@@ -87,6 +94,8 @@
     .contact-card .circle{width:64px;height:64px;border-radius:16px;background:linear-gradient(180deg,#f6e8fb,#f2f0ff);display:flex;align-items:center;justify-content:center;font-size:22px;color:#7b4cff}
     .card-text h4{margin:0 0 6px;font-size:16px}
     .card-text p{margin:0;color:#6b6b6b;font-size:14px}
+    /* ensure location uses site accent (pink) */
+    .contact-card .card-text .location-text{color:var(--accent) !important;font-weight:600}
 
     .contact-form{background:transparent}
     .row{margin-bottom:14px}
@@ -107,4 +116,59 @@
         .right-col{order:1}
         .row.two{flex-direction:column}
     }
+</style>
+<!-- Modal markup + script to show popup after form submit -->
+<div id="contact-modal-overlay" style="display:none"></div>
+<div id="contact-modal" role="dialog" aria-modal="true" style="display:none">
+    <div id="contact-modal-card">
+        <button id="contact-modal-close" aria-label="Close">×</button>
+        <div id="contact-modal-body"></div>
+    </div>
+</div>
+<script>
+    (function(){
+        // Modal helpers
+        function showModal(html, autoClose){
+            var overlay = document.getElementById('contact-modal-overlay');
+            var modal = document.getElementById('contact-modal');
+            var body = document.getElementById('contact-modal-body');
+            overlay.style.display = 'block';
+            modal.style.display = 'block';
+            body.innerHTML = html;
+            if (autoClose) {
+                setTimeout(hideModal, autoClose);
+            }
+        }
+        function hideModal(){
+            var overlay = document.getElementById('contact-modal-overlay');
+            var modal = document.getElementById('contact-modal');
+            overlay.style.display = 'none';
+            modal.style.display = 'none';
+        }
+        document.getElementById('contact-modal-overlay').addEventListener('click', hideModal);
+        document.getElementById('contact-modal-close').addEventListener('click', hideModal);
+
+        document.addEventListener('DOMContentLoaded', function(){
+            // If we rendered a flash alert, show it as modal
+            var success = document.querySelector('.alert-success');
+            var error = document.querySelector('.alert-danger');
+            if (success) {
+                showModal('<strong>Success</strong><div style="margin-top:8px">' + success.textContent.trim() + '</div>', 4000);
+                // optionally remove inline alert to avoid duplication
+                success.parentNode.removeChild(success);
+            } else if (error) {
+                showModal('<strong>Error</strong><div style="margin-top:8px">' + error.textContent.trim() + '</div>', 6000);
+                error.parentNode.removeChild(error);
+            }
+        });
+    })();
+</script>
+
+<style>
+    /* Modal styles (lightweight) */
+    #contact-modal-overlay{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.45);z-index:9999}
+    #contact-modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:10000;max-width:420px;width:90%;}
+    #contact-modal-card{background:#fff;border-radius:12px;padding:18px 18px 14px;box-shadow:0 20px 60px rgba(16,24,40,0.2);position:relative}
+    #contact-modal-close{position:absolute;right:8px;top:6px;border:0;background:transparent;font-size:20px;cursor:pointer;color:#666}
+    #contact-modal-body{color:#222;font-size:15px}
 </style>

@@ -3,6 +3,7 @@
         <h2>Blog Posts</h2>
         <button id="btn-create-post" class="btn btn-primary">Create New Post</button>
     </div>
+    
 
     <?php if ($this->session->flashdata('blog_success')): ?>
         <div class="alert alert-success" style="margin-top:1rem;"><?= $this->session->flashdata('blog_success'); ?></div>

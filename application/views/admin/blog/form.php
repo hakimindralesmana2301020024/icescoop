@@ -24,6 +24,26 @@
     }
     ?>
     <form method="post" action="<?= $action; ?>" onsubmit="return submitQuill();" enctype="multipart/form-data">
+        <style>
+            /* Responsive admin blog form tweaks */
+            .admin-page { padding: 12px; box-sizing: border-box; }
+            .admin-page form input[type="text"],
+            .admin-page form textarea,
+            .admin-page form select { width: 100%; box-sizing: border-box; }
+            .admin-page .row-flex { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+            .admin-page .row-flex > div { min-width:0; }
+            .admin-page .cover-preview { max-width:220px; width:100%; }
+            #quill-editor { width:100% !important; box-sizing:border-box; }
+            @media (max-width:720px) {
+                .admin-page .row-flex { flex-direction:column; align-items:stretch; }
+                .admin-page .cover-preview { max-width:100%; }
+                .admin-page .status-category-row { display:flex; flex-direction:column; gap:8px; }
+                .admin-page .status-category-row select { width:100%; }
+                .admin-page .admin-actions h2 { font-size:18px; }
+                .admin-page .btn { width:100%; margin-top:8px; }
+            }
+        </style>
+
         <div>
             <label>Title</label>
             <input type="text" name="title" id="title" value="<?= $is_edit ? htmlspecialchars($post['title']) : ''; ?>" required style="width:100%; padding:8px;">
@@ -37,13 +57,13 @@
             <textarea name="excerpt" rows="2" style="width:100%;"><?= $is_edit ? htmlspecialchars($post['excerpt']) : ''; ?></textarea>
         </div>
 
-        <div style="margin-top:.5rem; display:flex; gap:12px; align-items:center;">
-            <div>
+        <div class="row-flex" style="margin-top:.5rem;">
+            <div style="flex:1">
                 <label>Cover Image</label>
                 <input type="file" name="featured_image" accept="image/*">
             </div>
             <?php if ($is_edit && !empty($post['featured_image'])): ?>
-                <div style="max-width:220px;">
+                <div class="cover-preview" style="max-width:220px;">
                     <label>Current cover</label>
                     <div style="border:1px solid #ddd;padding:6px;background:#fff;">
                         <img src="<?= base_url('assets/images/' . $post['featured_image']); ?>" alt="cover" style="width:200px;height:auto;display:block;">
@@ -51,6 +71,8 @@
                 </div>
             <?php endif; ?>
         </div>
+
+        
 
         <div style="margin-top:.5rem;">
             <label>Content</label>
@@ -70,14 +92,38 @@
             <input type="hidden" name="content_delta" id="content_delta">
         </div>
 
-        <div style="margin-top:.5rem;">
-            <label>Status</label>
-            <select name="status">
+        <div class="status-category-row" style="margin-top:.5rem; display:flex; gap:12px; align-items:center;">
+            <div style="flex:1">
+                <label>Status</label>
+                <select name="status">
                 <option value="draft" <?= $is_edit && $post['status']=='draft' ? 'selected' : ''; ?>>Draft</option>
                 <option value="published" <?= $is_edit && $post['status']=='published' ? 'selected' : ''; ?>>Published</option>
                 <option value="archived" <?= $is_edit && $post['status']=='archived' ? 'selected' : ''; ?>>Archived</option>
             </select>
-            <label style="margin-left:1rem;"><input type="checkbox" name="is_featured" <?= $is_edit && $post['is_featured'] ? 'checked' : ''; ?>> Featured</label>
+            </div>
+            <div style="flex:1">
+                <label>Category</label>
+                <?php
+                $current = 'all';
+                if (isset($category_selected)) {
+                    $current = $category_selected;
+                } elseif (!empty($post) && isset($post['category'])) {
+                    $current = $post['category'];
+                }
+                $opts = [
+                    'all' => 'All',
+                    'activity' => 'Activity',
+                    'announcements' => 'Announcements',
+                    'news' => 'News'
+                ];
+                ?>
+                <select name="category_select" style="padding:6px; width:100%;">
+                    <?php foreach ($opts as $val => $label): ?>
+                        <option value="<?= htmlspecialchars($val) ?>" <?= $current === $val ? 'selected' : '' ?>><?= htmlspecialchars($label) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <label style="margin-left:1rem; white-space:nowrap;"><input type="checkbox" name="is_featured" <?= $is_edit && $post['is_featured'] ? 'checked' : ''; ?>> Featured</label>
         </div>
 
         <div style="margin-top:1rem;">
